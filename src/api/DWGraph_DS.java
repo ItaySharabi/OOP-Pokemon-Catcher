@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class DWGraph_DS implements directed_weighted_graph{
+public class DWGraph_DS implements directed_weighted_graph {
 
     private int edgeSize;
     private int countMC;
@@ -12,14 +12,15 @@ public class DWGraph_DS implements directed_weighted_graph{
     private HashMap<Integer, HashMap<Integer, edge_data>> outEdges; //A map that stores outgoing edges on the graph.
     private HashMap<Integer, HashMap<Integer, edge_data>> inEdges; //A map that stores incoming edges on the graph.
     /*Note: outEdges and inEdges are both of type HashMap, and each contains the in/out-going edges from src to dest.
-    * If node 3 has an edge TO node 5, then obtain it by: edge_data e = outEdges.get(3).get(5)
-    * If node 5 has an edge FROM node 3, the obtain it by: edge_data e = inEdges.get(5).get(3) */
+     * If node 3 has an edge TO node 5, then obtain it by: edge_data e = outEdges.get(3).get(5)
+     * If node 5 has an edge FROM node 3, the obtain it by: edge_data e = inEdges.get(5).get(3) */
 
     public DWGraph_DS() {
         edgeSize = 0;
-        nodes = new HashMap<>();
-        outEdges = new HashMap<>();
-        inEdges = new HashMap<>();
+        countMC = 0;
+        nodes = new HashMap<Integer, node_data>();
+        outEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
+        inEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
     }
 
 
@@ -55,13 +56,12 @@ public class DWGraph_DS implements directed_weighted_graph{
      */
     @Override
     public void addNode(node_data n) {
-        if (nodes.get(n.getKey()) != null) { //If a new node is being added to the graph -
+        if (nodes.containsKey(n.getKey())) { //If a new node is being added to the graph -
             nodes.put(n.getKey(), n); //Add it to the nodes map.
-            outEdges.put(n.getKey(), new HashMap<>()); //Init its out-going edge map.
-            inEdges.put(n.getKey(), new HashMap<>()); //Init its in-coming edge map.
+            outEdges.put(n.getKey(), new HashMap<Integer, edge_data>()); //Init its out-going edge map.
+            inEdges.put(n.getKey(), new HashMap<Integer, edge_data>()); //Init its in-coming edge map.
             countMC++; //Count 1 meta-change.
-        }
-        else System.out.println("A node with the same key is already on the graph!");
+        } else System.out.println("A node with the same key is already on the graph!");
     }
 
     /**
@@ -74,11 +74,17 @@ public class DWGraph_DS implements directed_weighted_graph{
      */
     @Override
     public void connect(int src, int dest, double w) {
-        if (w > 0) {
-            outEdges.get(src).put(dest, new EdgeData(src, dest, w)); //Put a new outgoing edge from src to dest
-            inEdges.get(dest).put(src, new EdgeData(src, dest, w)); //Put a new incoming edge from dest to src
-            edgeSize++; //A new edge is added - increment edgeSize
-            countMC++; //Count 1 meta-change.
+        if (nodes.containsKey(src) && nodes.containsKey(dest)) {
+            if (w >= 0) {
+                if (!nodes.containsKey(src) && !nodes.containsKey(dest)) {
+                    edgeSize++; //A new edge is added - increment edgeSize
+                    countMC++; //Count 1 meta-change.
+                }
+                if (outEdges.get(src).get(dest).getWeight() != w)
+                    countMC++;
+                outEdges.get(src).put(dest, new EdgeData(src, dest, w)); //Put a new outgoing edge from src to dest
+                inEdges.get(dest).put(src, new EdgeData(src, dest, w)); //Put a new incoming edge from dest to src
+            }
         }
     }
 
@@ -119,9 +125,8 @@ public class DWGraph_DS implements directed_weighted_graph{
     @Override
     public node_data removeNode(int key) {
         if (nodes.containsKey(key)) {
-
             Iterator<edge_data> itr = getE(key).iterator();
-            while(itr.hasNext()) { //Remove all outgoing edges from 'key'
+            while (itr.hasNext()) { //Remove all outgoing edges from 'key'
                 edge_data e = itr.next(); //Hold the edge src --> dest(i)
                 removeEdge(e.getSrc(), e.getDest());
             }
@@ -147,12 +152,16 @@ public class DWGraph_DS implements directed_weighted_graph{
      */
     @Override
     public edge_data removeEdge(int src, int dest) {
-        if (getEdge(src, dest) != null) {
-            inEdges.get(dest).remove(src);
-            edgeSize--;
-            return outEdges.get(src).remove(dest);
+        edge_data N1conN2 = null;
+        if (nodes.containsKey(src) && nodes.containsKey(dest)) { // first we need to check if those node are exist on the graph
+            if (outEdges.get(src).containsKey(dest) && inEdges.get(dest).containsKey(src)) { // then we need to check if there is a edge
+                N1conN2= outEdges.get(src).remove(dest); // then remove the edge from both HashMap
+                inEdges.get(dest).remove(src);
+                edgeSize--;
+                countMC++;
+            }
         }
-        return null;
+        return N1conN2;
     }
 
     /**
