@@ -14,12 +14,12 @@ public class EdgeData implements edge_data{
         weight = 0;
     }
 
-    public EdgeData(edge_data e) {
-        src = e.getSrc();
-        dest = e.getDest();
-        tag = e.getTag();
-        info = e.getInfo();
-        weight = e.getWeight();
+    public EdgeData(int src, int dest, double weight) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = weight;
+        tag = 0;
+        info = "Edge from " + src + " to " + dest;
     }
     /**
      * The id of the source node of this edge.
@@ -66,7 +66,7 @@ public class EdgeData implements edge_data{
      */
     @Override
     public void setInfo(String s) {
-        info = s;
+        if (s != null) info = s;
     }
 
     /**
