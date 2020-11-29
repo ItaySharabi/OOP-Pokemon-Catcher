@@ -14,13 +14,14 @@ public class EdgeData implements edge_data{
         weight = 0;
     }
 
-    public EdgeData(edge_data e) {
-        src = e.getSrc();
-        dest = e.getDest();
-        tag = e.getTag();
-        info = e.getInfo();
-        weight = e.getWeight();
+    public EdgeData(int src, int dest, double weight) {
+        this.src = src;
+        this.dest = dest;
+        this.weight = weight;
+        info = "Edge from " + src + " to " + dest;
+        tag = 0;
     }
+
     /**
      * The id of the source node of this edge.
      *
