@@ -22,6 +22,34 @@ public class DWGraph_DS implements directed_weighted_graph {
         outEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
         inEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
     }
+    public DWGraph_DS(directed_weighted_graph g){
+        if (g != null) {
+            nodes = new HashMap<Integer, node_data>();
+            outEdges = new HashMap<Integer, HashMap<Integer,edge_data>>();
+            inEdges = new HashMap<Integer, HashMap<Integer,edge_data>>();
+            double weight;
+            for (node_data v : g.getV()) {
+                node_data vCopy = new NodeData(v);
+                nodes.put(vCopy.getKey(), vCopy);
+                HashMap<Integer, edge_data> outEdgeN = new HashMap<Integer, edge_data>(); // create vertex Neighbors HashMap.
+                HashMap<Integer, edge_data> inEdgeN = new HashMap<Integer, edge_data>(); // create vertex Neighbors HashMap.
+                outEdges.put(vCopy.getKey(), outEdgeN);
+                inEdges.put(vCopy.getKey(), inEdgeN);
+                for (edge_data e : g.getE(v.getKey())) { // run all of outgoing edges from v node's neighbors
+                    edge_data eCopy = new EdgeData(e);
+                    weight = g.getEdge(v.getKey(),e.getDest()).getWeight();
+                    outEdges.get(vCopy.getKey()).put(eCopy.getDest(),eCopy);
+                }
+                for (edge_data e : getInE(v.getKey())) { // run all of incoming edges from v node's neighbors
+                    edge_data eCopy = new EdgeData(e);
+                    weight = g.getEdge(e.getSrc(), v.getKey()).getWeight();
+                    inEdges.get(vCopy.getKey()).put(eCopy.getSrc(),eCopy);
+                }
+            }
+            countMC = g.getMC();
+            edgeSize= g.edgeSize();
+        }
+    }
 
 
     /**
@@ -111,6 +139,10 @@ public class DWGraph_DS implements directed_weighted_graph {
         return outEdges.get(node_id).values(); //This is the outgoing edge_data collection for 'node_id'.
     }
 
+    public Collection<edge_data> getInE(int node_id) {
+        return inEdges.get(node_id).values(); //This is the outgoing edge_data collection for 'node_id'.
+    }
+
     /**
      * Deletes the node (with the given ID) from the graph -
      * and removes all edges which starts or ends at this node.
@@ -181,5 +213,23 @@ public class DWGraph_DS implements directed_weighted_graph {
     @Override
     public int getMC() {
         return countMC;
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+        for (Integer x : nodes.keySet()) {
+            str += "" + x + " --> out [";
+            for (edge_data i : getE(x)) {
+                str += i.getDest() + " (" + outEdges.get(x).get(i.getDest()).getWeight() + ") , ";//EdgeMap.get(x).keySet().toString() + " \n ";
+            }
+            str += "] \n";
+            str += "" + x + " --> in [";
+            for (edge_data i : getInE(x)) {
+                str += i.getDest() + " (" + inEdges.get(x).get(i.getDest()).getWeight() + ") , ";//EdgeMap.get(x).keySet().toString() + " \n ";
+            }
+            str += "] \n";
+        }
+        return str + " ";
     }
 }
