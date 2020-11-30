@@ -18,8 +18,8 @@ public class EdgeData implements edge_data{
         this.src = src;
         this.dest = dest;
         this.weight = weight;
-        info = "Edge from " + src + " to " + dest;
         tag = 0;
+        info = "Edge from " + src + " to " + dest;
     }
 
     /**
