@@ -14,6 +14,14 @@ public class EdgeData implements edge_data{
         weight = 0;
     }
 
+    public EdgeData(edge_data copy) {
+        src = copy.getSrc();
+        dest = copy.getDest();
+        tag = copy.getTag();
+        info = copy.getInfo();
+        weight = copy.getWeight();
+    }
+
     public EdgeData(int src, int dest, double weight) {
         this.src = src;
         this.dest = dest;
@@ -21,7 +29,6 @@ public class EdgeData implements edge_data{
         tag = 0;
         info = "Edge from " + src + " to " + dest;
     }
-
     /**
      * The id of the source node of this edge.
      *
@@ -90,5 +97,10 @@ public class EdgeData implements edge_data{
     @Override
     public void setTag(int t) {
         tag = t;
+    }
+
+    @Override
+    public String toString() {
+        return src+"-->"+dest+" ["+weight+"]";
     }
 }
