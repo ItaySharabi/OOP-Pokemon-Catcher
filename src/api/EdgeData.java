@@ -21,6 +21,7 @@ public class EdgeData implements edge_data{
         tag = 0;
         info = "Edge from " + src + " to " + dest;
     }
+
     /**
      * The id of the source node of this edge.
      *
