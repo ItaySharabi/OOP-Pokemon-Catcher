@@ -16,7 +16,13 @@ public class NodeData implements node_data {
         info = " ";
         location = null;
     }
-
+    public NodeData(int key){
+        this.key=key;
+        weight=0;
+        tag=0;
+        info="";
+        location=null;
+    }
     public NodeData(node_data n)
     {
         key = n.getKey();
@@ -117,5 +123,10 @@ public class NodeData implements node_data {
     @Override
     public void setTag(int t) {
         tag = t;
+    }
+
+    @Override
+    public String toString() {
+        return key+""+"["+weight+"]";
     }
 }
