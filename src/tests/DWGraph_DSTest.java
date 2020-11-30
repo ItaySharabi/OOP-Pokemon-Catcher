@@ -15,16 +15,17 @@ class DWGraph_DSTest {
     @BeforeAll
     static void makeGraph() {
         g = new DWGraph_DS();
-        g.addNode(new NodeData());
-        g.addNode(new NodeData());
-        g.addNode(new NodeData());
-        g.addNode(new NodeData());
+        g.addNode(new NodeData(0));
+        g.addNode(new NodeData(1));
+        g.addNode(new NodeData(2));
+        g.addNode(new NodeData(3));
 
         g.connect(0, 1, 1);
         g.connect(1, 2, 1);
         g.connect(2, 3, 1);
         g.connect(3, 1, 1);
     }
+
 
     @Test
     void getNode() {
@@ -37,6 +38,7 @@ class DWGraph_DSTest {
 
     @Test
     void getEdge() {
+
     }
 
     @Test
