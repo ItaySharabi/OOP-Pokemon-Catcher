@@ -124,8 +124,8 @@ public class DWGraph_DS implements directed_weighted_graph {
         if (nodes.containsKey(key)) { // if this graph contain this node
             node_data del = nodes.remove(key);
             int size= outEdges.get(key).size();
-            size+= inEdges.get(key).size();
-            edgeSize-=size;
+            size += inEdges.get(key).size();
+            edgeSize -= size;
             outEdges.remove(key);
             inEdges.remove(key);
             return del;
