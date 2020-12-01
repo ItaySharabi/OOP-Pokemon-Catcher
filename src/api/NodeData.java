@@ -16,6 +16,7 @@ public class NodeData implements node_data {
         info = " ";
         location = null;
     }
+
     public NodeData(int key){
         this.key=key;
         weight=0;
