@@ -130,7 +130,53 @@ public class DWGraph_Algo implements dw_graph_algorithms{
      */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
+
+        if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
+        if (src == dest || graph.getE(src).size() == 0) return null;
+
+//        List<node_data> visited = new LinkedList<>(); //A list of visited vertices.
+        HashMap<Integer, node_data> prevNode = new HashMap<>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
+
+        PriorityQueue<node_data> pq = new PriorityQueue<>(graph.nodeSize(), new NodeComparator()); //The BFS queue
+
+        boolean destinationFound = false;
+
+        setWeightInfinity(); //Init all distances from node 'src' to infinity
+        graph.getNode(src).setWeight(0); //The distance from src to src is 0.
+        pq.add(graph.getNode(src)); //Add start node to the queue and start traversing.
+
+        node_data curr, neighbor = null;
+        double totalDist;
+
+        while (!pq.isEmpty()) {
+
+            curr = pq.poll();
+
+            for (edge_data outEdge : graph.getE(curr.getKey())) {
+                neighbor = graph.getNode(outEdge.getDest());
+                if (neighbor.getKey() == dest) destinationFound = true;
+                totalDist = curr.getWeight() + outEdge.getWeight();
+
+                if (totalDist < neighbor.getWeight()) { //If the total distance is less than the known distance from neighbor to src.
+                    neighbor.setWeight(totalDist);
+                    if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)
+                        prevNode.put(neighbor.getKey(), curr);// Update the current calling node in prevNode.
+                }
+
+            }
+            if (!pq.contains(neighbor)) pq.add(neighbor);
+            curr.setTag(1);
+        }
+
+        if (destinationFound) System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
+
+
         return null;
+    }
+
+    private void setWeightInfinity() {
+
+        for (node_data n : graph.getV()) n.setWeight(Double.MAX_VALUE + 1);
     }
 
     /**
@@ -167,5 +213,55 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public String toString() {
         return graph.toString();
+    }
+}
+
+class NodeComparator implements Comparator<node_data> {
+
+    /**
+     * Compares its two arguments for order.  Returns a negative integer,
+     * zero, or a positive integer as the first argument is less than, equal
+     * to, or greater than the second.<p>
+     * <p>
+     * The implementor must ensure that {@code sgn(compare(x, y)) ==
+     * -sgn(compare(y, x))} for all {@code x} and {@code y}.  (This
+     * implies that {@code compare(x, y)} must throw an exception if and only
+     * if {@code compare(y, x)} throws an exception.)<p>
+     * <p>
+     * The implementor must also ensure that the relation is transitive:
+     * {@code ((compare(x, y)>0) && (compare(y, z)>0))} implies
+     * {@code compare(x, z)>0}.<p>
+     * <p>
+     * Finally, the implementor must ensure that {@code compare(x, y)==0}
+     * implies that {@code sgn(compare(x, z))==sgn(compare(y, z))} for all
+     * {@code z}.<p>
+     * <p>
+     * It is generally the case, but <i>not</i> strictly required that
+     * {@code (compare(x, y)==0) == (x.equals(y))}.  Generally speaking,
+     * any comparator that violates this condition should clearly indicate
+     * this fact.  The recommended language is "Note: this comparator
+     * imposes orderings that are inconsistent with equals."<p>
+     * <p>
+     * In the foregoing description, the notation
+     * {@code sgn(}<i>expression</i>{@code )} designates the mathematical
+     * <i>signum</i> function, which is defined to return one of {@code -1},
+     * {@code 0}, or {@code 1} according to whether the value of
+     * <i>expression</i> is negative, zero, or positive, respectively.
+     *
+     * @param o1 the first object to be compared.
+     * @param o2 the second object to be compared.
+     * @return a negative integer, zero, or a positive integer as the
+     * first argument is less than, equal to, or greater than the
+     * second.
+     * @throws NullPointerException if an argument is null and this
+     *                              comparator does not permit null arguments
+     * @throws ClassCastException   if the arguments' types prevent them from
+     *                              being compared by this comparator.
+     */
+    @Override
+    public int compare(node_data o1, node_data o2) {
+        return o1.getWeight() > o2.getWeight() ?
+                (int)(o1.getWeight() - o2.getWeight()) :
+                (int)(o2.getWeight() - o1.getWeight());
     }
 }
