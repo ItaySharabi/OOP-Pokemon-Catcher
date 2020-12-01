@@ -22,11 +22,12 @@ public class DWGraph_DS implements directed_weighted_graph {
         outEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
         inEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
     }
-    public DWGraph_DS(directed_weighted_graph g){
+
+    public DWGraph_DS(directed_weighted_graph g) {
         if (g != null) {
             nodes = new HashMap<Integer, node_data>();
-            outEdges = new HashMap<Integer, HashMap<Integer,edge_data>>();
-            inEdges = new HashMap<Integer, HashMap<Integer,edge_data>>();
+            outEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
+            inEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
             double weight;
             for (node_data v : g.getV()) {
                 node_data vCopy = new NodeData(v);
@@ -37,17 +38,17 @@ public class DWGraph_DS implements directed_weighted_graph {
                 inEdges.put(vCopy.getKey(), inEdgeN);
                 for (edge_data e : g.getE(v.getKey())) { // run all of outgoing edges from v node's neighbors
                     edge_data eCopy = new EdgeData(e);
-                    weight = g.getEdge(v.getKey(),e.getDest()).getWeight();
-                    outEdges.get(vCopy.getKey()).put(eCopy.getDest(),eCopy);
+                    weight = g.getEdge(v.getKey(), e.getDest()).getWeight();
+                    outEdges.get(vCopy.getKey()).put(eCopy.getDest(), eCopy);
                 }
                 for (edge_data e : getInE(v.getKey())) { // run all of incoming edges from v node's neighbors
                     edge_data eCopy = new EdgeData(e);
                     weight = g.getEdge(e.getSrc(), v.getKey()).getWeight();
-                    inEdges.get(vCopy.getKey()).put(eCopy.getSrc(),eCopy);
+                    inEdges.get(vCopy.getKey()).put(eCopy.getSrc(), eCopy);
                 }
             }
             countMC = g.getMC();
-            edgeSize= g.edgeSize();
+            edgeSize = g.edgeSize();
         }
     }
 
@@ -73,7 +74,7 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public edge_data getEdge(int src, int dest) {
-        if(!nodes.containsKey(src) || !nodes.containsKey(dest)) return null;
+        if (!nodes.containsKey(src) || !nodes.containsKey(dest)) return null;
         return outEdges.get(src).get(dest);
     }
 
@@ -107,8 +108,9 @@ public class DWGraph_DS implements directed_weighted_graph {
             if (w < 0) return;
             if (!outEdges.get(src).containsKey(dest))  //If edge (src,dest) did not exist before, increment edgeSize.
                 edgeSize++;
-            outEdges.get(src).put(dest, new EdgeData(src, dest, w)); //Put a new outgoing edge from src to dest
-            inEdges.get(dest).put(src, new EdgeData(src, dest, w)); //Put a new incoming edge from dest to src
+            edge_data edge = new EdgeData(src, dest, w);
+            outEdges.get(src).put(dest, edge); //Put a new outgoing edge from src to dest
+            inEdges.get(dest).put(src, edge); //Put a new incoming edge from dest to src
             countMC++;
         }
     }
@@ -155,7 +157,7 @@ public class DWGraph_DS implements directed_weighted_graph {
     public node_data removeNode(int key) {
         if (nodes.containsKey(key)) { // if this graph contain this node
             node_data del = nodes.remove(key);
-            int size= outEdges.get(key).size();
+            int size = outEdges.get(key).size();
             size += inEdges.get(key).size();
             edgeSize -= size;
             outEdges.remove(key);
@@ -226,7 +228,7 @@ public class DWGraph_DS implements directed_weighted_graph {
             str += "] \n";
             str += "" + x + " --> in [";
             for (edge_data i : getInE(x)) {
-                str += i.getDest() + " (" + inEdges.get(x).get(i.getDest()).getWeight() + ") , ";//EdgeMap.get(x).keySet().toString() + " \n ";
+                str += i.getSrc() + " (" + inEdges.get(x).get(i.getSrc()).getWeight() + ") , ";//EdgeMap.get(x).keySet().toString() + " \n ";
             }
             str += "] \n";
         }
