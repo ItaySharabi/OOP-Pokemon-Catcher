@@ -19,14 +19,13 @@ class DWGraph_DSTest {
     void makeGraph() {
         g = new DWGraph_DS();
         g.addNode(new NodeData(0));
-        g.addNode(new NodeData(1));
-        g.addNode(new NodeData(2));
-        g.addNode(new NodeData(3));
 
-        g.connect(0, 1, 1);
-        g.connect(1, 2, 1);
-        g.connect(2, 3, 1);
-        g.connect(3, 1, 1);
+        for (int i = 1; i < 100; i++) {
+            g.addNode(new NodeData(i));
+            int rnd = (int) (Math.random() * g.nodeSize());
+            g.connect(i - 1, rnd, i);
+            System.out.println(i - 1 + " --> " + rnd);
+        }
     }
 
     /**
@@ -48,20 +47,19 @@ class DWGraph_DSTest {
 
     @Test
     void getEdge() {
-        assertNotNull(g.getEdge(0, 1));
 
         g.removeEdge(0, 1);
         assertNull(g.getEdge(0, 1));
 
         //Trying to override edges with different weights:
         g.connect(0, 1, 2);
-        assertEquals(g.getEdge(0, 1).getWeight(), 2);
+        assertEquals(2, g.getEdge(0, 1).getWeight());
         g.connect(0, 1, 1);
-        assertEquals(g.getEdge(0, 1).getWeight(), 1);
+        assertEquals(1, g.getEdge(0, 1).getWeight());
         g.connect(0, 1, -1);
-        assertEquals(g.getEdge(0, 1).getWeight(), 1);
+        assertEquals(1, g.getEdge(0, 1).getWeight());
 
-        //If a node is removed check if the edges are removed.
+        //If a node is removed check if the edges are removed
         g.removeNode(1);
         assertNull(g.getEdge(0, 1));
 
@@ -79,7 +77,7 @@ class DWGraph_DSTest {
         g.addNode(n2);
         g.connect(n1.getKey(), n2.getKey(), 1);
         assertNotNull(g.getEdge(n1.getKey(), n2.getKey()));
-        assertEquals(n1.getInfo(), g.getNode(g.getEdge(n1.getKey(), n2.getKey()).getSrc()).getInfo());
+        assertNotEquals(n1.getInfo(), g.getNode(g.getEdge(n1.getKey(), n2.getKey()).getSrc()).getInfo());
         System.out.println(n1.getInfo() + " Compared to " + n2.getInfo());
     }
 
@@ -95,6 +93,14 @@ class DWGraph_DSTest {
 
     @Test
     void removeNode() {
+
+        g.removeNode(3); //Remove same node twice.
+        g.removeNode(3);
+        assertNull(g.getNode(3)); //Make sure the node is gone.
+
+        assertNull(g.getEdge(3, 1)); //Make sure edges are gone.
+
+
     }
 
     @Test
