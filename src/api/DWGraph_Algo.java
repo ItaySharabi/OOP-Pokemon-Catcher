@@ -169,7 +169,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
 
         if (destinationFound) System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
-
+        else System.out.println("Fix path");
 
         return null;
     }
