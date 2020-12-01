@@ -54,9 +54,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public boolean isConnected() {
 
-        for (node_data n : graph.getV())
-            if(!isConnectedBFS(n)) return false;
+        if (graph.getV().size() <= 1) return true;
 
+        for (node_data n : graph.getV())
+            if(!isConnectedBFS(n)) {resetTags(); return false;}
+
+        resetTags();
         return true;
     }
 
@@ -159,5 +162,10 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     private void resetTags() {
         for (node_data n : graph.getV())
             n.setTag(0);
+    }
+
+    @Override
+    public String toString() {
+        return graph.toString();
     }
 }
