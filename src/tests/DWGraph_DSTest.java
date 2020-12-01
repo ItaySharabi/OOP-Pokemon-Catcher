@@ -59,7 +59,7 @@ class DWGraph_DSTest {
         g.connect(0, 1, -1);
         assertEquals(1, g.getEdge(0, 1).getWeight());
 
-        //If a node is removed check if the edges are removed.
+        //If a node is removed check if the edges are removed
         g.removeNode(1);
         assertNull(g.getEdge(0, 1));
 
