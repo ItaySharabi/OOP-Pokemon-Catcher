@@ -104,15 +104,15 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public void connect(int src, int dest, double w) {
-        if (nodes.containsKey(src) && nodes.containsKey(dest)) {
-            if (w < 0) return;
-            if (!outEdges.get(src).containsKey(dest))  //If edge (src,dest) did not exist before, increment edgeSize.
-                edgeSize++;
-            edge_data edge = new EdgeData(src, dest, w);
-            outEdges.get(src).put(dest, edge); //Put a new outgoing edge from src to dest
-            inEdges.get(dest).put(src, edge); //Put a new incoming edge from dest to src
-            countMC++;
-        }
+        if (!(nodes.containsKey(src) && nodes.containsKey(dest) && src != dest)) return;
+        if (w < 0) return;
+
+        if (!outEdges.get(src).containsKey(dest))  //If edge (src,dest) did not exist before, increment edgeSize.
+            edgeSize++;
+        edge_data edge = new EdgeData(src, dest, w);
+        outEdges.get(src).put(dest, edge); //Put a new outgoing edge from src to dest
+        inEdges.get(dest).put(src, edge); //Put a new incoming edge from dest to src
+        countMC++;
     }
 
     /**
@@ -156,13 +156,26 @@ public class DWGraph_DS implements directed_weighted_graph {
     @Override
     public node_data removeNode(int key) {
         if (nodes.containsKey(key)) { // if this graph contain this node
-            node_data del = nodes.remove(key);
-            int size = outEdges.get(key).size();
-            size += inEdges.get(key).size();
-            edgeSize -= size;
-            outEdges.remove(key);
-            inEdges.remove(key);
-            return del;
+//            node_data del = nodes.remove(key);
+//            int size = outEdges.get(key).size();
+//            size += inEdges.get(key).size();
+//            edgeSize -= size;
+//            outEdges.remove(key);
+//            inEdges.remove(key);
+//            return del;
+            Iterator<edge_data> itr = getE(key).iterator();
+            while(itr.hasNext()) { //Remove all outgoing edges from 'key'
+                edge_data e = itr.next(); //Hold the edge src --> dest(i)
+                removeEdge(e.getSrc(), e.getDest());
+            }
+
+            itr = inEdges.get(key).values().iterator();
+            while (itr.hasNext()) { //Remove all incoming edges to 'key'
+                edge_data e = itr.next(); //Hold the edge from dest(i) --> src
+                removeEdge(e.getDest(), e.getSrc());
+            }
+
+            return nodes.remove(key);
         }
         return null;
     }
@@ -177,7 +190,7 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public edge_data removeEdge(int src, int dest) {
-        if (getEdge(src, dest) != null) {
+        if (getEdge(src, dest) != null && src != dest) {
             inEdges.get(dest).remove(src);
             edgeSize--;
             return outEdges.get(src).remove(dest);
