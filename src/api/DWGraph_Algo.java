@@ -29,7 +29,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         g.connect(4, 1, 1);
         System.out.println(graph);
         ga.init(g);
-//        System.out.println(ga.shortestPath(1, 4));
+        System.out.println(ga.shortestPath(1, 4));
 
         ga.getGraph().removeNode(3);
 //        System.out.println(ga.shortestPath(1, 4));
