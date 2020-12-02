@@ -14,6 +14,30 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         init(g);
     }
 
+    public static void main(String[] args) {
+
+        directed_weighted_graph graph = new DWGraph_DS();
+        dw_graph_algorithms ga = new DWGraph_Algo();
+        directed_weighted_graph g = ga.getGraph();
+        g.addNode(new NodeData(1));
+        g.addNode(new NodeData(2));
+        g.addNode(new NodeData(3));
+        g.addNode(new NodeData(4));
+        g.connect(1, 2, 1);
+        g.connect(2, 3, 1);
+        g.connect(3, 4, 1);
+        g.connect(4, 1, 1);
+        System.out.println(graph);
+        ga.init(g);
+        System.out.println(ga.shortestPath(1, 4));
+
+        ga.getGraph().removeNode(3);
+        System.out.println(ga.shortestPath(1, 4));
+
+        ga.getGraph().connect(2, 4, 10);
+        System.out.println(ga.shortestPath(1, 4));
+    }
+
     /**
      * Init the graph on which this set of algorithms operates on.
      *
@@ -134,7 +158,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
         if (src == dest || graph.getE(src).size() == 0) return null;
 
-//        List<node_data> visited = new LinkedList<>(); //A list of visited vertices.
+//        List<node_data> path = new LinkedList<>(); //A list of visited vertices.
         HashMap<Integer, node_data> prevNode = new HashMap<>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
         PriorityQueue<node_data> pq = new PriorityQueue<>(graph.nodeSize(), new NodeComparator()); //The BFS queue
@@ -154,6 +178,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
             for (edge_data outEdge : graph.getE(curr.getKey())) {
                 neighbor = graph.getNode(outEdge.getDest());
+                System.out.println(outEdge);
                 if (neighbor.getKey() == dest) destinationFound = true;
                 totalDist = curr.getWeight() + outEdge.getWeight();
 
@@ -163,14 +188,15 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                         prevNode.put(neighbor.getKey(), curr);// Update the current calling node in prevNode.
                 }
 
+            if (neighbor.getTag() == 0 && !pq.contains(neighbor)) pq.add(neighbor);
             }
-            if (!pq.contains(neighbor)) pq.add(neighbor);
             curr.setTag(1);
         }
 
         if (destinationFound) System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
         else System.out.println("Fix path");
 
+        resetTags();
         return null;
     }
 
@@ -260,8 +286,8 @@ class NodeComparator implements Comparator<node_data> {
      */
     @Override
     public int compare(node_data o1, node_data o2) {
-        return o1.getWeight() > o2.getWeight() ?
-                (int)(o1.getWeight() - o2.getWeight()) :
-                (int)(o2.getWeight() - o1.getWeight());
+        if (o1.getWeight() > o2.getWeight() || o2.getWeight() > o1.getWeight())
+            return (int) (o1.getWeight() - o2.getWeight());
+        return 0;
     }
 }
