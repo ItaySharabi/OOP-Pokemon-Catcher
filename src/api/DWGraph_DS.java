@@ -163,7 +163,6 @@ public class DWGraph_DS implements directed_weighted_graph {
 //            outEdges.remove(key);
 //            inEdges.remove(key);
 //            return del;
-
             Iterator<edge_data> itr = getE(key).iterator();
             while(itr.hasNext()) { //Remove all outgoing edges from 'key'
                 edge_data e = itr.next(); //Hold the edge src --> dest(i)
