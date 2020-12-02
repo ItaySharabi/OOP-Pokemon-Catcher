@@ -32,7 +32,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         System.out.println(ga.shortestPath(1, 4));
 
         ga.getGraph().removeNode(3);
-        System.out.println(ga.shortestPath(1, 4));
+//        System.out.println(ga.shortestPath(1, 4));
 
         ga.getGraph().connect(2, 4, 10);
         System.out.println(ga.shortestPath(1, 4));
@@ -178,6 +178,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
             for (edge_data outEdge : graph.getE(curr.getKey())) {
                 neighbor = graph.getNode(outEdge.getDest());
+                if (neighbor == null) continue;
                 System.out.println(outEdge);
                 if (neighbor.getKey() == dest) destinationFound = true;
                 totalDist = curr.getWeight() + outEdge.getWeight();
@@ -187,8 +188,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                     if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)
                         prevNode.put(neighbor.getKey(), curr);// Update the current calling node in prevNode.
                 }
-
-            if (neighbor.getTag() == 0 && !pq.contains(neighbor)) pq.add(neighbor);
+            if (!pq.contains(neighbor) && neighbor.getTag() == 0) pq.add(neighbor);
             }
             curr.setTag(1);
         }
