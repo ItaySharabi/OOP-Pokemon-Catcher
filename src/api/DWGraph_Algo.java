@@ -6,7 +6,7 @@ import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
 
-    private static directed_weighted_graph graph;
+    private directed_weighted_graph graph;
 
     public DWGraph_Algo() {
         graph = new DWGraph_DS();
@@ -17,6 +17,8 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     }
 
     public static void main(String[] args) {
+
+        directed_weighted_graph graph = new DWGraph_DS();
         dw_graph_algorithms ga = new DWGraph_Algo();
         directed_weighted_graph g = ga.getGraph();
         g.addNode(new NodeData(1));
@@ -196,6 +198,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         if (destinationFound) System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
         else System.out.println("Fix path");
 
+        resetTags();
         return null;
     }
 
@@ -285,8 +288,8 @@ class NodeComparator implements Comparator<node_data> {
      */
     @Override
     public int compare(node_data o1, node_data o2) {
-        return o1.getWeight() > o2.getWeight() ?
-                (int)(o1.getWeight() - o2.getWeight()) :
-                (int)Math.abs(o1.getWeight() - o2.getWeight());
+        if (o1.getWeight() > o2.getWeight() || o2.getWeight() > o1.getWeight())
+            return (int) (o1.getWeight() - o2.getWeight());
+        return 0;
     }
 }
