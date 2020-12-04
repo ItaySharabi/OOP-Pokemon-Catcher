@@ -151,7 +151,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         int size = path.size(); //Keep the size of the path.
 
         //If size > 0 -> There is a path from src to dest, return the total weight.
-        if (size > 0) return path.get(path.indexOf(graph.getNode(dest))).getWeight();
+        if (size > 0) return path.get(size-1).getWeight();
 
         return -1;
     }
