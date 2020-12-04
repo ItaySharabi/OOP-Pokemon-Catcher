@@ -91,7 +91,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
 
         node_data curr = start;
         node_data neighbor = null;
-
+        resetTags(); // Was added to make sure all node's tags are reset.
         Queue<node_data> queue = new LinkedList<>();
         queue.add(curr);
         curr.setTag(1);
