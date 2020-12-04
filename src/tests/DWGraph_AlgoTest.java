@@ -15,9 +15,21 @@ class DWGraph_AlgoTest {
     @BeforeEach
     void makeGraph() {
         g = new DWGraph_DS();
-        g.addNode(new NodeData(2));
-        g.addNode(new NodeData(3));
-        g.connect(2, 3, 1);
+        int j = 0;
+        int executions = 0;
+
+        for(int i = 0; i < 10; i++)
+            g.addNode(new NodeData(i));
+
+        while (j < 10) {
+            int a = (int) (Math.random()*g.nodeSize());
+            int b = (int) (Math.random()*g.nodeSize());
+//            System.out.println(g.nodeSize());
+            System.out.println("Connecting " + a + " to " + b);
+            if (a != b && g.getEdge(a, b) == null) g.connect(a, b, (j++)/1.0);
+            executions++;
+        }
+        System.out.println(executions + " Executions");
         ga = new DWGraph_Algo(g);
 
     }
@@ -53,9 +65,6 @@ class DWGraph_AlgoTest {
     void copy() {
         directed_weighted_graph copied = ga.copy(); //Checks first if |V1|+|E1| == |V2|+|E2|
         assertEquals(copied.nodeSize() + copied.edgeSize(), ga.getGraph().nodeSize() + ga.getGraph().edgeSize());
-
-        copied.removeEdge(2, 3);
-        assertNotNull(ga.getGraph().getEdge(2, 3));
 
         copied.addNode(new NodeData(4));
         copied.addNode(new NodeData(1));

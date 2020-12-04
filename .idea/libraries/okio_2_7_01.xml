@@ -7,6 +7,7 @@
       <root url="jar://$PROJECT_DIR$/src/libs/Ex2_Server_v0.13.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/libs/annotations-13.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/src/libs/java-json.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../gson-2.8.6 (1).jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
