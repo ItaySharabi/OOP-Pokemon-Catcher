@@ -220,6 +220,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         List<node_data> path = new LinkedList<>();
 
         node_data current = graph.getNode(dest), next = null;
+        current.setTag(0);
         path.add(current);
 
         while (current.getKey() != src) {
