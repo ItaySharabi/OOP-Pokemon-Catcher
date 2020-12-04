@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
 
-public class DWGraph_Algo implements dw_graph_algorithms{
+public class DWGraph_Algo implements dw_graph_algorithms {
 
     private directed_weighted_graph graph;
 
@@ -87,7 +87,10 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         if (graph.getV().size() <= 1) return true; //A graph with 0 or 1 nodes is a connected graph.
 
         for (node_data n : graph.getV())
-            if(!isConnectedBFS(n)) {resetTags(); return false;} //If isConnectedBFS returns false then the graph isn't connected.
+            if (!isConnectedBFS(n)) {
+                resetTags();
+                return false;
+            } //If isConnectedBFS returns false then the graph isn't connected.
 
         resetTags();
         return true;
@@ -102,10 +105,11 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         queue.add(curr);
         curr.setTag(1);
 
-        while(!queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             curr = queue.poll();
             Collection<edge_data> outEdges = graph.getE(curr.getKey());
-            if (outEdges.size() == 0) return false; //If a single node has no outgoing edges - the graph is not connected.
+            if (outEdges.size() == 0)
+                return false; //If a single node has no outgoing edges - the graph is not connected.
 
             for (edge_data e : outEdges) { //Iterate over outgoing edges from curr
                 neighbor = graph.getNode(e.getDest());
@@ -117,7 +121,10 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             }
         }
 
-        if (allNodesWereVisited(graph)) {resetTags(); return true;}
+        if (allNodesWereVisited(graph)) {
+            resetTags();
+            return true;
+        }
 
         return false;
     }
@@ -125,6 +132,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     /**
      * This method checks if all nodes on the graph have been visited.
      * If one node was not visited then returns false - meaning one node was not reached through another node.
+     *
      * @param graph - this graph.
      * @return true iff all nodes on the graph were visited.
      */
@@ -157,7 +165,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         int size = path.size(); //Keep the size of the path.
 
         //If size > 0 -> There is a path from src to dest, return the total weight.
-        if (size > 0) return path.get(size-1).getWeight();
+        if (size > 0) return path.get(size - 1).getWeight();
 
         return -1;
     }
@@ -178,12 +186,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
         if (src == dest || graph.getE(src).size() == 0) return null;
 
-        HashMap<Integer, node_data> prevNode = new HashMap<>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
+        HashMap<Integer, node_data> prevNode = new HashMap<Integer, node_data>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
-        PriorityQueue<node_data> pq = new PriorityQueue<>(graph.nodeSize(), new NodeComparator()); //The BFS queue
+        PriorityQueue<node_data> pq = new PriorityQueue<node_data>(graph.nodeSize(), new NodeComparator()); //The BFS queue
 
         boolean destinationFound = false;
-        node_data curr, neighbor = null;
+        node_data curr = null, neighbor = null;
 
         setWeightInfinity(); //Init all distances from node 'src' to infinity
         graph.getNode(src).setWeight(0); //The distance from src to src is 0.
@@ -198,13 +206,13 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             for (edge_data outEdge : graph.getE(curr.getKey())) {
                 neighbor = graph.getNode(outEdge.getDest());
                 if (neighbor == null) continue;
-                System.out.println(outEdge);
+                System.out.println(outEdge); // SHOULD be REMOVE when we finish our tests
                 if (neighbor.getKey() == dest) destinationFound = true;
                 totalDist = curr.getWeight() + outEdge.getWeight();
 
                 if (totalDist < neighbor.getWeight()) { //If the total distance is less than the known distance from neighbor to src.
                     neighbor.setWeight(totalDist);
-                    if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)
+                    if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)//If the neighbor's key isn't associate with curr's node
                         prevNode.put(neighbor.getKey(), curr);// Update the current calling node in prevNode.
                 }
                 if (!pq.contains(neighbor) && neighbor.getTag() == 0) pq.add(neighbor);
@@ -213,17 +221,16 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         }
 
         if (destinationFound) {
-            System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
+            System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight()); //SHOULD be REMOVE when we finish our tests
             return rebuildPath(src, dest, prevNode);
-        }
-        else System.out.println("Destination not found!");
+        } else System.out.println("Destination not found!");//SHOULD be REMOVE when we finish our tests
 
         resetTags();
         return null;
     }
 
     private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
-        List<node_data> path = new LinkedList<>();
+        List<node_data> path = new LinkedList<node_data>();
 
         node_data current = graph.getNode(dest), next = null;
         current.setTag(0);
@@ -254,11 +261,11 @@ public class DWGraph_Algo implements dw_graph_algorithms{
      */
     @Override // Was checking from internet, NEED to check together!
     public boolean save(String file) {
-        Gson GraphGson= new GsonBuilder().create(); // create a jSon object
-        String jsonString= GraphGson.toJson(graph); // create a string object that contain the data of graph object
+        Gson GraphGson = new GsonBuilder().create(); // create a jSon object
+        String jsonString = GraphGson.toJson(graph); // create a string object that contain the data of graph object
         try {
             File Ofile = new File(file); // crate a file
-            PrintWriter pw= new PrintWriter(Ofile); // create a printWriter object that contain our "file"
+            PrintWriter pw = new PrintWriter(Ofile); // create a printWriter object that contain our "file"
             pw.write(jsonString); // add the jsonString object that contain the graph to pw object
             pw.close(); // close this pw object
             return true;
@@ -278,7 +285,9 @@ public class DWGraph_Algo implements dw_graph_algorithms{
      * @return true - iff the graph was successfully loaded.
      */
     @Override
-    public boolean load(String file) { return false;}
+    public boolean load(String file) {
+        return false;
+    }
 
     private void resetTags() {
         for (node_data n : graph.getV())
