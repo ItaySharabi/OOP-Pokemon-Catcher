@@ -152,7 +152,7 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public node_data removeNode(int key) {
-        if (nodes.containsKey(key)) return null;
+        if (!nodes.containsKey(key)) return null;
 
         Iterator<edge_data> itr = getE(key).iterator();
         while (itr.hasNext()) { //Remove all outgoing edges from 'key'
