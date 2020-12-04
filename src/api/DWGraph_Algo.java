@@ -78,10 +78,10 @@ public class DWGraph_Algo implements dw_graph_algorithms{
     @Override
     public boolean isConnected() {
 
-        if (graph.getV().size() <= 1) return true;
+        if (graph.getV().size() <= 1) return true; //A graph with 0 or 1 nodes is a connected graph.
 
         for (node_data n : graph.getV())
-            if(!isConnectedBFS(n)) {resetTags(); return false;}
+            if(!isConnectedBFS(n)) {resetTags(); return false;} //If isConnectedBFS returns false then the graph isn't connected.
 
         resetTags();
         return true;
@@ -116,6 +116,12 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         return false;
     }
 
+    /**
+     * This method checks if all nodes on the graph have been visited.
+     * If one node was not visited then returns false - meaning one node was not reached through another node.
+     * @param graph - this graph.
+     * @return true iff all nodes on the graph were visited.
+     */
     private boolean allNodesWereVisited(directed_weighted_graph graph) {
         for (node_data n : graph.getV())
             if (n.getTag() == 0) return false;
@@ -123,6 +129,8 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         return true;
     }
 
+    // Returns the first node encountered in this graph's node collection.
+    // O(1).
     private node_data getFirstNode(directed_weighted_graph graph) {
         for (node_data n : graph.getV())
             return n;
@@ -139,7 +147,13 @@ public class DWGraph_Algo implements dw_graph_algorithms{
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        List<node_data> path = shortestPath(src, dest); //Execute a shortestPath Algo from src to dest.
+        int size = path.size(); //Keep the size of the path.
+
+        //If size > 0 -> There is a path from src to dest, return the total weight.
+        if (size > 0) return path.get(path.indexOf(graph.getNode(dest))).getWeight();
+
+        return -1;
     }
 
     /**
@@ -158,18 +172,17 @@ public class DWGraph_Algo implements dw_graph_algorithms{
         if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
         if (src == dest || graph.getE(src).size() == 0) return null;
 
-//        List<node_data> path = new LinkedList<>(); //A list of visited vertices.
         HashMap<Integer, node_data> prevNode = new HashMap<>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
         PriorityQueue<node_data> pq = new PriorityQueue<>(graph.nodeSize(), new NodeComparator()); //The BFS queue
 
         boolean destinationFound = false;
+        node_data curr, neighbor = null;
 
         setWeightInfinity(); //Init all distances from node 'src' to infinity
         graph.getNode(src).setWeight(0); //The distance from src to src is 0.
         pq.add(graph.getNode(src)); //Add start node to the queue and start traversing.
 
-        node_data curr, neighbor = null;
         double totalDist;
 
         while (!pq.isEmpty()) {
@@ -193,11 +206,31 @@ public class DWGraph_Algo implements dw_graph_algorithms{
             curr.setTag(1);
         }
 
-        if (destinationFound) System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
-        else System.out.println("Fix path");
+        if (destinationFound) {
+            System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight());
+            return rebuildPath(src, dest, prevNode);
+        }
+        else System.out.println("Destination not found!");
 
         resetTags();
         return null;
+    }
+
+    private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
+        List<node_data> path = new LinkedList<>();
+
+        node_data current = graph.getNode(dest), next = null;
+        path.add(current);
+
+        while (current.getKey() != src) {
+            next = prevNode.get(current.getKey()); //Extract the node who called current node.
+            next.setTag(0); //Set tag to 0 (resetTags()) because nodes are deep copied with tag == 1.
+            path.add(new NodeData(next)); //Add a deep copy of 'next' to the list.
+            current = next; //Increment current node.
+        }
+
+        Collections.reverse(path);
+        return path; //Return a path with all copied nodes on the requested path.
     }
 
     private void setWeightInfinity() {
