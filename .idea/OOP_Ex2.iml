@@ -41,5 +41,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="okio-2.7.01" level="project" />
+    <orderEntry type="library" name="gson-2.8.6" level="project" />
   </component>
 </module>

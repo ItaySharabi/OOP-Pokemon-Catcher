@@ -1,5 +1,11 @@
 package api;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms{
@@ -201,7 +207,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
                     if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)
                         prevNode.put(neighbor.getKey(), curr);// Update the current calling node in prevNode.
                 }
-            if (!pq.contains(neighbor) && neighbor.getTag() == 0) pq.add(neighbor);
+                if (!pq.contains(neighbor) && neighbor.getTag() == 0) pq.add(neighbor);
             }
             curr.setTag(1);
         }
@@ -246,9 +252,20 @@ public class DWGraph_Algo implements dw_graph_algorithms{
      * @param file - the file name (may include a relative path).
      * @return true - iff the file was successfully saved
      */
-    @Override
+    @Override // Was checking from internet, NEED to check together!
     public boolean save(String file) {
-        return false;
+        Gson GraphGson= new GsonBuilder().create(); // create a jSon object
+        String jsonString= GraphGson.toJson(graph); // create a string object that contain the data of graph object
+        try {
+            File Ofile = new File(file); // crate a file
+            PrintWriter pw= new PrintWriter(Ofile); // create a printWriter object that contain our "file"
+            pw.write(jsonString); // add the jsonString object that contain the graph to pw object
+            pw.close(); // close this pw object
+            return true;
+        } catch (FileNotFoundException e) { // if something want wrong return false
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -261,9 +278,7 @@ public class DWGraph_Algo implements dw_graph_algorithms{
      * @return true - iff the graph was successfully loaded.
      */
     @Override
-    public boolean load(String file) {
-        return false;
-    }
+    public boolean load(String file) { return false;}
 
     private void resetTags() {
         for (node_data n : graph.getV())
