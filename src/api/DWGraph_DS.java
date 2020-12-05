@@ -157,12 +157,14 @@ public class DWGraph_DS implements directed_weighted_graph {
         Iterator<edge_data> itr = getE(key).iterator();
         while (itr.hasNext()) { //Remove all outgoing edges from 'key'
             edge_data e = itr.next(); //Hold the edge src --> dest(i)
+            itr.remove(); //This fixes a ConcurrentModificationException error
             removeEdge(e.getSrc(), e.getDest());
         }
 
         itr = inEdges.get(key).values().iterator();
         while (itr.hasNext()) { //Remove all incoming edges to 'key'
             edge_data e = itr.next(); //Hold the edge from dest(i) --> src
+            itr.remove(); //This fixes a ConcurrentModificationException error
             removeEdge(e.getSrc(), e.getDest());
         }
         return nodes.remove(key);
