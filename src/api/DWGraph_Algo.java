@@ -1,12 +1,12 @@
 package api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class DWGraph_Algo implements dw_graph_algorithms {
@@ -288,11 +288,37 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * @param file - file name of JSON file
      * @return true - iff the graph was successfully loaded.
      */
-    @Override // NEED TO CHECK !
+    @Override // NEED TO CHECK , was created by watching Simon Pikalov video guide.
     public boolean load(String file) {
         try {
-            Gson GraphGson = new Gson(); // Create a jSon object
-            graph =GraphGson.fromJson(file, DWGraph_DS.class); // Read the json string and place this graph object on graph.
+//            Gson GraphGson = new Gson(); // Create a jSon object
+            GsonBuilder GraphGson = new GsonBuilder();
+            JsonDeserializer<directed_weighted_graph> deserializerGraph= new JsonDeserializer<directed_weighted_graph>() { // inner class
+                public directed_weighted_graph deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+
+                    JsonObject jsonObject = json.getAsJsonObject(); // get the Json Object
+                    JsonArray edges = jsonObject.get("Edges").getAsJsonArray(); // define edges to "Edges" on json
+                    JsonArray nodes = jsonObject.get("Nodes").getAsJsonArray(); // define nodes to "Nodes" on json
+                    directed_weighted_graph g = new DWGraph_DS(); // Init graph
+
+                    for (JsonElement i : nodes) { // start to build graph's nodes
+                        int node_id = i.getAsJsonObject().get("id").getAsInt();
+                        // should add location object here due that node data contain geo_location object.
+                        node_data n = new NodeData(node_id); // create node data by node id.
+                        g.addNode(n); // add this node data to this new graph
+                    }
+                    for (JsonElement i : edges) { // supposed to connect those node to edges by "Edges" json String
+                        int src = i.getAsJsonObject().get("src").getAsInt();
+                        int dest = i.getAsJsonObject().get("dest").getAsInt();
+                        double w = i.getAsJsonObject().get("w").getAsDouble();
+                        g.connect(src, dest, w);
+                    }
+                    return g;
+                }
+            };
+            GraphGson.registerTypeAdapter(directed_weighted_graph.class,deserializerGraph);
+            Gson customGraph= GraphGson.create();
+            graph =customGraph.fromJson(file, directed_weighted_graph.class); // Read the json string and place this graph object on graph.
             System.out.println("Graph loaded successful");
             return true;
         }
