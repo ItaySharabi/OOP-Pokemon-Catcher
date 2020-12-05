@@ -291,7 +291,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override // NEED TO CHECK !
     public boolean load(String file) {
         try {
-            File Ofile = new File(file);// Init the file string to File Object , load this string file.
             Gson GraphGson = new Gson(); // Create a jSon object
             graph =GraphGson.fromJson(file, DWGraph_DS.class); // Read the json string and place this graph object on graph.
             System.out.println("Graph loaded successful");
