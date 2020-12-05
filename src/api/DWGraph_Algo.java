@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -261,15 +262,18 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override // Was checking from internet, NEED to check together!
     public boolean save(String file) {
-        Gson GraphGson = new GsonBuilder().create(); // create a jSon object
-        String jsonString = GraphGson.toJson(graph); // create a string object that contain the data of graph object
         try {
+//            Gson GraphGson = new GsonBuilder().create(); // create a jSon object
+            Gson GraphGson= new Gson(); // create a jSon object
+            String jsonString = GraphGson.toJson(graph); // create a string object that contain the data of graph object
             File Ofile = new File(file); // crate a file
             PrintWriter pw = new PrintWriter(Ofile); // create a printWriter object that contain our "file"
             pw.write(jsonString); // add the jsonString object that contain the graph to pw object
             pw.close(); // close this pw object
+            System.out.println("Graph save successful");
             return true;
         } catch (FileNotFoundException e) { // if something want wrong return false
+            System.out.println("Graph save failed");
             e.printStackTrace();
             return false;
         }
@@ -284,9 +288,20 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * @param file - file name of JSON file
      * @return true - iff the graph was successfully loaded.
      */
-    @Override
+    @Override // NEED TO CHECK !
     public boolean load(String file) {
-        return false;
+        try {
+            File Ofile = new File(file);// Init the file string to File Object , load this string file.
+            Gson GraphGson = new Gson(); // Create a jSon object
+            graph =GraphGson.fromJson(file, DWGraph_DS.class); // Read the json string and place this graph object on graph.
+            System.out.println("Graph loaded successful");
+            return true;
+        }
+        catch (NullPointerException e) // If file == null
+        {
+            System.out.println("Graph loaded failed");
+            return false;
+        }
     }
 
     private void resetTags() {
