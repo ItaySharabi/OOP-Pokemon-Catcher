@@ -11,19 +11,16 @@ class DWGraph_AlgoTest {
 
     static directed_weighted_graph g;
     static dw_graph_algorithms ga = new DWGraph_Algo();
-    static int V, E, randomWeightSeed = 3;
+    static int V = 0, //Vertices
+               E = 0, //Edges
+               randomWeightSeed = 3; //Random seed for weight
 
-    @Test
-    void init() {
-
-        ga.init(g);
-        assertNotNull(ga);
-        assertNotNull(ga.getGraph());
-
-        ga.init(null);
-        assertNotNull(ga);
-        assertNotNull(ga.getGraph());
-
+    @BeforeAll
+    static void init() {
+        V = 5;
+        E = 20;
+        g = new DWGraph_DS();
+        ga = new DWGraph_Algo(g);
     }
 
     @Test
@@ -44,19 +41,27 @@ class DWGraph_AlgoTest {
 
     }
 
+
     @Test
     void copy() {
         V = 10;
         E = 45;
         g = makeGraph(V, E);
         ga.init(g);
+        directed_weighted_graph copy = ga.copy();
 
-        assertEquals(g, ga.copy());
+        assertEquals(g, copy);
+        assertEquals(ga.getGraph(), copy);
+        assertEquals(ga.copy(), copy);
 
+        node_data n = g.getNode(0);
+        for (node_data k : g.getV()) {n = k; break;} //Hold an existing node on the graph.
 
+        g.removeNode(n.getKey());
 
-
-
+        assertNotEquals(g, copy);
+        assertNotEquals(ga.getGraph(), copy);
+        assertNotEquals(ga.copy(), copy);
     }
 
     @Test
@@ -126,6 +131,21 @@ class DWGraph_AlgoTest {
         ga.getGraph().removeEdge(2, 3);
         testConnectivity(true, ga.getGraph());
 
+        ga.init(makeGraph(2, 0));
+        makeConnectedGraph(ga.getGraph(), 4);
+        testConnectivity(true, ga.getGraph());
+        System.out.println("--------------------------------------------------");
+
+        ga.init(makeGraph(5, 0));
+        makeConnectedGraph(ga.getGraph(), 4);
+        testConnectivity(true, ga.getGraph());
+        System.out.println("--------------------------------------------------");
+
+        ga.init(makeGraph(7, 0));
+        makeConnectedGraph(ga.getGraph(), 4);
+        testConnectivity(true, ga.getGraph());
+        System.out.println("--------------------------------------------------");
+
     }
 
     directed_weighted_graph makeGraph(int v_size, int e_size) {
@@ -171,6 +191,35 @@ class DWGraph_AlgoTest {
             if (executions == e_size*3) System.out.println("Required edges: " + e_size + ", actual: " + graph.edgeSize());
         }
         System.out.println(executions + " Executions");
+
+    }
+
+    /**
+     * This method connects random edges on the given graph, until the graph is connected.
+     * Every edge is connected with a random weight in range: (double)[0, randomSeed - 1].
+     * @param graph
+     * @param randomSeed
+     */
+    private void makeConnectedGraph(directed_weighted_graph graph, double randomSeed) {
+
+        DWGraph_Algo gg = new DWGraph_Algo(graph);
+        int v = graph.nodeSize();
+        int maxEdgeSize = v*(v-1);
+        while(!gg.isConnected()) {
+            randomlyConnectGraph(graph, maxEdgeSize, randomSeed);
+            gg.init(graph);
+        }
+    }
+
+    @Test
+    void shortestPathTest() {
+        V = 5;
+        g = makeGraph(V, 0);
+        ga.init(g);
+        System.out.println(g);
+
+        double dist = ga.shortestPathDist(0, 4);
+        System.out.println(dist);
 
     }
 
