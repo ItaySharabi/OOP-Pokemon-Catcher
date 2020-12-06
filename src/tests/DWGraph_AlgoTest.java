@@ -51,12 +51,8 @@ class DWGraph_AlgoTest {
         g = makeGraph(V, E);
         ga.init(g);
 
-        directed_weighted_graph g2 = ga.copy();
-//        assertEquals(g2, g);
-//        assertEquals(g2, ga.getGraph());
+        assertEquals(g, ga.copy());
 
-//        g2.removeNode(3); //Throws a ConcurrentModification Exception.
-        assertNotNull(ga.getGraph().getNode(3));
 
 
 
@@ -104,6 +100,32 @@ class DWGraph_AlgoTest {
 
         ga.getGraph().removeNode(3); //Remove a node from the cycle.
         testConnectivity(false, ga.getGraph()); //Test the same cycle after removing a node - should be false.
+        ga.init(makeGraph(7, 0));
+        ga.getGraph().connect(0, 1, 1);
+        ga.getGraph().connect(0, 2, 1);
+        ga.getGraph().connect(1, 3, 1);
+        ga.getGraph().connect(3, 1, 1);
+        ga.getGraph().connect(1, 4, 1);
+        ga.getGraph().connect(4, 1, 1);
+        ga.getGraph().connect(2, 5, 1);
+        ga.getGraph().connect(5, 2, 1);
+        ga.getGraph().connect(5, 6, 1);
+        ga.getGraph().connect(6, 5, 1);
+        testConnectivity(false, ga.getGraph());
+
+        ga.init(makeGraph(4, 0));
+        ga.getGraph().connect(0, 1, 1);
+        ga.getGraph().connect(1, 0, 1);
+        ga.getGraph().connect(1, 2, 1);
+        ga.getGraph().connect(2, 1, 1);
+        ga.getGraph().connect(3, 2, 1);
+        ga.getGraph().connect(2, 3, 1);
+        ga.getGraph().connect(0, 3, 1);
+        testConnectivity(true, ga.getGraph());
+
+        ga.getGraph().removeEdge(2, 3);
+        testConnectivity(true, ga.getGraph());
+
     }
 
     directed_weighted_graph makeGraph(int v_size, int e_size) {
