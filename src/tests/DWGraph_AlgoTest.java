@@ -216,10 +216,20 @@ class DWGraph_AlgoTest {
         V = 5;
         g = makeGraph(V, 0);
         ga.init(g);
-        System.out.println(g);
 
+        ga.getGraph().connect(0, 1, 1);
+        ga.getGraph().connect(1, 2, 1);
+        ga.getGraph().connect(2, 3, 1);
+        ga.getGraph().connect(3, 4 ,1);
+        ga.getGraph().connect(4, 0 ,1);
         double dist = ga.shortestPathDist(0, 4);
+        System.out.println(g);
         System.out.println(dist);
+        ga.init(makeGraph(V*2, 0));
+        makeConnectedGraph(ga.getGraph(), 1);
+        dist = ga.shortestPathDist(0, 9);
+        System.out.println(dist); //TODO: Bug found --PriorityQueue is not prioritizing nodes by weight.
+
 
     }
 
