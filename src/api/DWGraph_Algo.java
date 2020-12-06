@@ -51,12 +51,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         System.out.println(graph);
         ga.init(g);
         System.out.println(ga.shortestPath(0, 5));
+        ga.save("MyFile.txt");
 
-        ga.getGraph().removeNode(3);
-//        System.out.println(ga.shortestPath(1, 4));
+        if (ga.copy().equals(ga.getGraph())) System.out.println("copy equals getGraph");
+//        if (ga.getGraph().equals(ga.load("MyFile.txt"))) System.out.println("getGraph equals load"); //TODO: FIX load().
 
-        ga.getGraph().connect(2, 4, 10);
-        System.out.println(ga.shortestPath(1, 4));
+
     }
 
     /**
@@ -205,6 +205,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         HashMap<Integer, node_data> prevNode = new HashMap<Integer, node_data>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
         PriorityQueue<node_data> pq = new PriorityQueue<node_data>(new NodeComparator()); //The BFS queue
+        List<node_data> path = null;
 
         boolean destinationFound = false;
         node_data curr = null, neighbor = null;
@@ -237,13 +238,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             curr.setTag(1);
         }
 
-        if (destinationFound) {
-            System.out.println("Destination Found! distance = " + graph.getNode(dest).getWeight()); //SHOULD be REMOVE when we finish our tests
-            return rebuildPath(src, dest, prevNode);
-        } else System.out.println("Destination not found!");//SHOULD be REMOVE when we finish our tests
+        if (destinationFound)
+            path = rebuildPath(src, dest, prevNode);
 
         resetTags();
-        return null;
+        return path;
     }
 
     private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
@@ -305,7 +304,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * @return true - iff the graph was successfully loaded.
      */
     @Override // NEED TO CHECK , was created by watching Simon Pikalov video guide.
-    public boolean load(String file) {
+    public boolean load(String file) { //TODO: THIS METHOD DOES NOT WORK.
         try {
 //            Gson GraphGson = new Gson(); // Create a jSon object
             GsonBuilder GraphGson = new GsonBuilder();
@@ -333,8 +332,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                 }
             };
             GraphGson.registerTypeAdapter(directed_weighted_graph.class,deserializerGraph);
-            Gson customGraph= GraphGson.create();
-            graph =customGraph.fromJson(file, directed_weighted_graph.class); // Read the json string and place this graph object on graph.
+            Gson customGraph = GraphGson.create();
+            graph = customGraph.fromJson(file, directed_weighted_graph.class); // Read the json string and place this graph object on graph.
             System.out.println("Graph loaded successful");
             return true;
         }
