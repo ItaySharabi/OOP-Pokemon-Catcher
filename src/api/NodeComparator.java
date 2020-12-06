@@ -48,8 +48,6 @@ public class NodeComparator implements Comparator<node_data> {
      */
     @Override
     public int compare(node_data o1, node_data o2) {
-        if (o1.getWeight() > o2.getWeight() || o2.getWeight() > o1.getWeight())
-            return (int) (o1.getWeight() - o2.getWeight());
-        return 0;
+        return Double.compare(o1.getWeight(), o2.getWeight());
     }
 }
