@@ -163,6 +163,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override
     public double shortestPathDist(int src, int dest) {
         List<node_data> path = shortestPath(src, dest); //Execute a shortestPath Algo from src to dest.
+        if (path == null) return -1;
         int size = path.size(); //Keep the size of the path.
 
         //If size > 0 -> There is a path from src to dest, return the total weight.
