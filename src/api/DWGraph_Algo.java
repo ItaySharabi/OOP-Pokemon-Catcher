@@ -190,7 +190,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
         HashMap<Integer, node_data> prevNode = new HashMap<Integer, node_data>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
-        PriorityQueue<node_data> pq = new PriorityQueue<node_data>(graph.nodeSize(), new NodeComparator()); //The BFS queue
+        PriorityQueue<node_data> pq = new PriorityQueue<node_data>(new NodeComparator()); //The BFS queue
 
         boolean destinationFound = false;
         node_data curr = null, neighbor = null;
@@ -204,6 +204,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         while (!pq.isEmpty()) {
 
             curr = pq.poll();
+            System.out.println("Popped from queue: " + curr.getKey() + ", with weight: " + curr.getWeight());
 
             for (edge_data outEdge : graph.getE(curr.getKey())) {
                 neighbor = graph.getNode(outEdge.getDest());
