@@ -31,23 +31,29 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         g.addNode(new NodeData(2));
         g.addNode(new NodeData(3));
         g.addNode(new NodeData(4));
-        g.addNode(new NodeData(5));
-        g.connect(0,1,8.33);
-        g.connect(1,3,2.1);
-        g.connect(3,4,4.9);
-        g.connect(0,2,4.2);
-        g.connect(0,3,3.3);
-        g.connect(3,5,15.7);
-        g.connect(0,5,100.4);
-        g.connect(4,5,1.4);
-        g.connect(5,4,13.4);
-        g.connect(1,4,17.4);
-        g.connect(2,5,11.5);
-        g.connect(5,0,0.5);
-        g.connect(3,1,7.5);
-        g.connect(3,2,1.96);
-        g.connect(2,0,13.7);
-        g.connect(4,3,3.7);
+        g.connect(0, 1, 1);
+        g.connect(1, 2, 1);
+        g.connect(1, 3, 1);
+        g.connect(4, 2, 1);
+        ga.init(g);
+        System.out.println(ga.isConnected());
+//        g.addNode(new NodeData(5));
+//        g.connect(0, 1, 8.33);
+//        g.connect(1, 3, 2.1);
+//        g.connect(3, 4, 4.9);
+//        g.connect(0, 2, 4.2);
+//        g.connect(0, 3, 3.3);
+//        g.connect(3, 5, 15.7);
+//        g.connect(0, 5, 100.4);
+//        g.connect(4, 5, 1.4);
+//        g.connect(5, 4, 13.4);
+//        g.connect(1, 4, 17.4);
+//        g.connect(2, 5, 11.5);
+//        g.connect(5, 0, 0.5);
+//        g.connect(3, 1, 7.5);
+//        g.connect(3, 2, 1.96);
+//        g.connect(2, 0, 13.7);
+//        g.connect(4, 3, 3.7);
         System.out.println(graph);
         ga.init(g);
         System.out.println(ga.shortestPath(0, 5));
@@ -98,20 +104,17 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public boolean isConnected() {
-
         if (graph.getV().size() <= 1) return true; //A graph with 0 or 1 nodes is a connected graph.
 
-        for (node_data n : graph.getV())
-            if (!isConnectedBFS(n)) {
-                resetTags();
+        for (node_data n : graph.getV()) //If isConnectedBFS returns false then the graph isn't connected.
+            if (!isConnectedBFS(n))
                 return false;
-            } //If isConnectedBFS returns false then the graph isn't connected.
 
-        resetTags();
         return true;
     }
 
     private boolean isConnectedBFS(node_data start) {
+        resetTags();
 
         node_data curr = start;
         node_data neighbor = null;
@@ -136,10 +139,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             }
         }
 
-        if (allNodesWereVisited(graph)) {
-            resetTags();
+        if (allNodesWereVisited(graph))
             return true;
-        }
 
         return false;
     }
@@ -198,6 +199,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
+        resetTags();
 
         if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
         if (src == dest || graph.getE(src).size() == 0) return null;
@@ -241,7 +243,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         if (destinationFound)
             path = rebuildPath(src, dest, prevNode);
 
-        resetTags();
         return path;
     }
 
@@ -277,19 +278,35 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override // Was checking from internet, NEED to check together!
     public boolean save(String file) {
+//        try {
+////            Gson GraphGson = new GsonBuilder().create(); // create a jSon object
+//            Gson GraphGson= new Gson(); // create a jSon object
+//            String jsonString = GraphGson.toJson(graph); // create a string object that contain the data of graph object
+//            File Ofile = new File(file); // crate a file
+//            PrintWriter pw = new PrintWriter(Ofile); // create a printWriter object that contain our "file"
+//            pw.write(jsonString); // add the jsonString object that contain the graph to pw object
+//            pw.close(); // close this pw object
+//            System.out.println("Graph save successful");
+//            return true;
+//        } catch (FileNotFoundException e) { // if something want wrong return false
+//            System.out.println("Graph save failed");
+//            e.printStackTrace();
+//            return false;
+//        }
+        Gson graph = new GsonBuilder().create();
+        String graphJSON = graph.toJson(this.graph);
+        File oFile = new File(file); // create a file
         try {
-//            Gson GraphGson = new GsonBuilder().create(); // create a jSon object
-            Gson GraphGson= new Gson(); // create a jSon object
-            String jsonString = GraphGson.toJson(graph); // create a string object that contain the data of graph object
-            File Ofile = new File(file); // crate a file
-            PrintWriter pw = new PrintWriter(Ofile); // create a printWriter object that contain our "file"
-            pw.write(jsonString); // add the jsonString object that contain the graph to pw object
-            pw.close(); // close this pw object
+            PrintWriter pw = new PrintWriter(oFile); // create a printWriter object that contain our "file"
+            System.out.println(graphJSON);
+            pw.write(graphJSON);
+//            pw.flush();
+            pw.close();
             System.out.println("Graph save successful");
             return true;
-        } catch (FileNotFoundException e) { // if something want wrong return false
-            System.out.println("Graph save failed");
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.out.println("Graph save failed");
             return false;
         }
     }
@@ -308,7 +325,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         try {
 //            Gson GraphGson = new Gson(); // Create a jSon object
             GsonBuilder GraphGson = new GsonBuilder();
-            JsonDeserializer<directed_weighted_graph> deserializerGraph= new JsonDeserializer<directed_weighted_graph>() { // inner class
+            JsonDeserializer<directed_weighted_graph> deserializerGraph = new JsonDeserializer<directed_weighted_graph>() { // inner class
                 public directed_weighted_graph deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 
                     JsonObject jsonObject = json.getAsJsonObject(); // get the Json Object
@@ -331,13 +348,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                     return g;
                 }
             };
-            GraphGson.registerTypeAdapter(directed_weighted_graph.class,deserializerGraph);
+            GraphGson.registerTypeAdapter(directed_weighted_graph.class, deserializerGraph);
             Gson customGraph = GraphGson.create();
             graph = customGraph.fromJson(file, directed_weighted_graph.class); // Read the json string and place this graph object on graph.
             System.out.println("Graph loaded successful");
             return true;
-        }
-        catch (NullPointerException e) // If file == null
+        } catch (NullPointerException e) // If file == null
         {
             System.out.println("Graph loaded failed");
             return false;
