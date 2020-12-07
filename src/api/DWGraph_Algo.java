@@ -64,8 +64,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         ga.init(g);
         System.out.println(ga.shortestPath(0, 5));
         ga.save("MyFile.txt");
+        dw_graph_algorithms ga2 = new DWGraph_Algo();
+        ga2.load("MyFile.txt");
+        System.out.println(ga2.getGraph());
+        System.out.println(ga2.getGraph().equals(ga.getGraph()));
 
-        if (ga.copy().equals(ga.getGraph())) System.out.println("copy equals getGraph");
+//        if (ga.copy().equals(ga.getGraph())) System.out.println("copy equals getGraph");
 //        if (ga.getGraph().equals(ga.load("MyFile.txt"))) System.out.println("getGraph equals load"); //TODO: FIX load().
 
 
@@ -386,21 +390,37 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 //            System.out.println("Graph loaded failed");
 //            return false;
 //        }
-
-        Gson graph = new GsonBuilder().create();
-        String graphJSON;
-        directed_weighted_graph loadedGraph;
+        directed_weighted_graph newGraph = new DWGraph_DS();
+        JsonObject graph; //The Gson Object to read from.
+        File f = new File(file); //The file containing the data.
         try {
-            FileReader reader = new FileReader(new File(file));
-            int fileSize = reader.read();
-            if (fileSize > 0)
-                loadedGraph = (directed_weighted_graph) graph.fromJson(reader, DWGraph_DS.class);
+            FileReader reader = new FileReader(f);
+            graph = new JsonParser().parse(reader).getAsJsonObject();
+            JsonArray edges = graph.getAsJsonArray("Edges"); //Get The "Edges" member from the Json Value.
+            JsonArray nodes = graph.getAsJsonArray("Nodes"); //Get The "Edges" member from the Json Value.
+
+            for (JsonElement node : nodes) {
+                node_data n = new NodeData(((JsonObject)node).get("id").getAsInt()); //Insert into node_data n values from Json.
+                newGraph.addNode(n);
+            }
+
+            for (JsonElement edge : edges) {
+                int src = ((JsonObject)edge).get("src").getAsInt();
+                double weight = ((JsonObject)edge).get("w").getAsDouble();
+                int dest = ((JsonObject)edge).get("dest").getAsInt();
+
+                edge_data e = new EdgeData(src, dest, weight);
+                newGraph.connect(e.getSrc(), e.getDest(), e.getWeight());
+            }
+            this.graph = newGraph;
+            System.out.println("Graph loaded successfully");
+            return true;
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            System.out.println("Failed to load graph");
             e.printStackTrace();
         }
+
         return false;
     }
 
