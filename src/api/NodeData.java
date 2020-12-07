@@ -1,5 +1,7 @@
 package api;
 
+import gameClient.util.Point3D;
+
 import java.util.Objects;
 
 public class NodeData implements node_data {
@@ -16,7 +18,7 @@ public class NodeData implements node_data {
         weight = 0;
         tag = 0;
         info = " ";
-        location = null;
+        location = new Point3D(0, 0, 0);
     }
 
     public NodeData(int key){
@@ -24,7 +26,7 @@ public class NodeData implements node_data {
         weight=0;
         tag=0;
         info="";
-        location=null;
+        location = new Point3D(0, 0, 0);
     }
     public NodeData(node_data n)
     {
