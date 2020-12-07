@@ -1,11 +1,10 @@
 package api;
 
 import com.google.gson.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -31,10 +30,17 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         g.addNode(new NodeData(2));
         g.addNode(new NodeData(3));
         g.addNode(new NodeData(4));
-        g.connect(0, 1, 1);
+//        g.addNode(new NodeData(5));
+//        g.addNode(new NodeData(6));
+        g.connect(1, 0, 1);
+        g.connect(0, 2, 1);
+        g.connect(2, 4, 1);
         g.connect(1, 2, 1);
-        g.connect(1, 3, 1);
-        g.connect(4, 2, 1);
+        g.connect(3, 2, 1);
+        g.connect(4, 3, 1);
+//        g.connect(1, 0, 1);
+//        g.connect(5, 6, 1);
+//        g.connect(6, 5, 1);
         ga.init(g);
         System.out.println(ga.isConnected());
 //        g.addNode(new NodeData(5));
@@ -293,22 +299,44 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 //            e.printStackTrace();
 //            return false;
 //        }
-        Gson graph = new GsonBuilder().create();
-        String graphJSON = graph.toJson(this.graph);
-        File oFile = new File(file); // create a file
+
+        Gson json = new GsonBuilder().create();
+        JsonObject graph = new JsonObject();
+        JsonArray nodes = new JsonArray();
+        JsonArray edges = new JsonArray();
+
+
+        for (node_data node : this.graph.getV()) {
+            JsonObject v = new JsonObject();
+            v.addProperty("pos", node.getLocation().x() + "," + node.getLocation().y() + "," + node.getLocation().z());
+            v.addProperty("id", node.getKey());
+            nodes.add(v);
+
+            for (edge_data outEdge : this.graph.getE(node.getKey())) {
+                JsonObject edge = new JsonObject();
+                edge.addProperty("src", outEdge.getSrc());
+                edge.addProperty("w", outEdge.getWeight());
+                edge.addProperty("dest", outEdge.getDest());
+                edges.add(edge);
+            } //Add all edges to the JSONArray Object
+        } //Add all nodes to the JSONArray Object
+
+        graph.add("Edges", edges);
+        graph.add("Nodes", nodes);
+
+        File f = new File(file);
         try {
-            PrintWriter pw = new PrintWriter(oFile); // create a printWriter object that contain our "file"
-            System.out.println(graphJSON);
-            pw.write(graphJSON);
-//            pw.flush();
-            pw.close();
-            System.out.println("Graph save successful");
+            FileWriter writer = new FileWriter(f);
+            writer.write(json.toJson(graph));
+            writer.close();
             return true;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Graph save failed");
+            System.out.println("Failed to save graph");
             return false;
         }
+
+
     }
 
     /**
@@ -322,42 +350,58 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      */
     @Override // NEED TO CHECK , was created by watching Simon Pikalov video guide.
     public boolean load(String file) { //TODO: THIS METHOD DOES NOT WORK.
+//        try {
+////            Gson GraphGson = new Gson(); // Create a jSon object
+//            GsonBuilder GraphGson = new GsonBuilder();
+//            JsonDeserializer<directed_weighted_graph> deserializerGraph = new JsonDeserializer<directed_weighted_graph>() { // inner class
+//                public directed_weighted_graph deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+//
+//                    JsonObject jsonObject = json.getAsJsonObject(); // get the Json Object
+//                    JsonArray edges = jsonObject.get("Edges").getAsJsonArray(); // define edges to "Edges" on json
+//                    JsonArray nodes = jsonObject.get("Nodes").getAsJsonArray(); // define nodes to "Nodes" on json
+//                    directed_weighted_graph g = new DWGraph_DS(); // Init graph
+//
+//                    for (JsonElement i : nodes) { // start to build graph's nodes
+//                        int node_id = i.getAsJsonObject().get("id").getAsInt();
+//                        // should add location object here due that node data contain geo_location object.
+//                        node_data n = new NodeData(node_id); // create node data by node id.
+//                        g.addNode(n); // add this node data to this new graph
+//                    }
+//                    for (JsonElement i : edges) { // supposed to connect those node to edges by "Edges" json String
+//                        int src = i.getAsJsonObject().get("src").getAsInt();
+//                        int dest = i.getAsJsonObject().get("dest").getAsInt();
+//                        double w = i.getAsJsonObject().get("w").getAsDouble();
+//                        g.connect(src, dest, w);
+//                    }
+//                    return g;
+//                }
+//            };
+//            GraphGson.registerTypeAdapter(directed_weighted_graph.class, deserializerGraph);
+//            Gson customGraph = GraphGson.create();
+//            graph = customGraph.fromJson(file, directed_weighted_graph.class); // Read the json string and place this graph object on graph.
+//            System.out.println("Graph loaded successful");
+//            return true;
+//        } catch (NullPointerException e) // If file == null
+//        {
+//            System.out.println("Graph loaded failed");
+//            return false;
+//        }
+
+        Gson graph = new GsonBuilder().create();
+        String graphJSON;
+        directed_weighted_graph loadedGraph;
         try {
-//            Gson GraphGson = new Gson(); // Create a jSon object
-            GsonBuilder GraphGson = new GsonBuilder();
-            JsonDeserializer<directed_weighted_graph> deserializerGraph = new JsonDeserializer<directed_weighted_graph>() { // inner class
-                public directed_weighted_graph deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            FileReader reader = new FileReader(new File(file));
+            int fileSize = reader.read();
+            if (fileSize > 0)
+                loadedGraph = (directed_weighted_graph) graph.fromJson(reader, DWGraph_DS.class);
 
-                    JsonObject jsonObject = json.getAsJsonObject(); // get the Json Object
-                    JsonArray edges = jsonObject.get("Edges").getAsJsonArray(); // define edges to "Edges" on json
-                    JsonArray nodes = jsonObject.get("Nodes").getAsJsonArray(); // define nodes to "Nodes" on json
-                    directed_weighted_graph g = new DWGraph_DS(); // Init graph
-
-                    for (JsonElement i : nodes) { // start to build graph's nodes
-                        int node_id = i.getAsJsonObject().get("id").getAsInt();
-                        // should add location object here due that node data contain geo_location object.
-                        node_data n = new NodeData(node_id); // create node data by node id.
-                        g.addNode(n); // add this node data to this new graph
-                    }
-                    for (JsonElement i : edges) { // supposed to connect those node to edges by "Edges" json String
-                        int src = i.getAsJsonObject().get("src").getAsInt();
-                        int dest = i.getAsJsonObject().get("dest").getAsInt();
-                        double w = i.getAsJsonObject().get("w").getAsDouble();
-                        g.connect(src, dest, w);
-                    }
-                    return g;
-                }
-            };
-            GraphGson.registerTypeAdapter(directed_weighted_graph.class, deserializerGraph);
-            Gson customGraph = GraphGson.create();
-            graph = customGraph.fromJson(file, directed_weighted_graph.class); // Read the json string and place this graph object on graph.
-            System.out.println("Graph loaded successful");
-            return true;
-        } catch (NullPointerException e) // If file == null
-        {
-            System.out.println("Graph loaded failed");
-            return false;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     private void resetTags() {
