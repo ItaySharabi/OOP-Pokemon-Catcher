@@ -362,7 +362,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
                 z = Double.parseDouble(posArr[2]);
                 geo_location location = new Point3D(x, y, z);
                 node_data n = new NodeData(key); //Insert into node_data n values from Json.
-
+                n.setLocation(location); //Insert into node_data n location values from Json that created.
                 newGraph.addNode(n);
             }
 
