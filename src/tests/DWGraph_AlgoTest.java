@@ -144,7 +144,6 @@ class DWGraph_AlgoTest {
         makeFullGraph(ga.getGraph(), 4);
         testConnectivity(true, ga.getGraph());
         System.out.println("--------------------------------------------------");
-
     }
 
     @Test
@@ -203,6 +202,12 @@ class DWGraph_AlgoTest {
         randomlyConnectGraph(graph, maxEdgeSize, randomSeed);
     }
 
+    /**
+     * This method connects random nodes on the given graph, until e_size edges exist on the graph.
+     * @param graph - The graph to randomly connect
+     * @param e_size - Required edge number (Max = |V| * (|V|-1), |V| = graph.nodeSize()).
+     * @param rnd - A number that determines the range on the random weight for an edge - (double)[0, rnd-1].
+     */
     private void randomlyConnectGraph(directed_weighted_graph graph, int e_size, double rnd) {
 
         if (graph == null || e_size < 0 || rnd < 0) return;
@@ -218,10 +223,16 @@ class DWGraph_AlgoTest {
             if (a != b && graph.getEdge(a, b) == null) {
                 graph.connect(nodes[a], nodes[b], weight);
                 j++;
-            }
-        }
+            } //If a connection could be made.
+        } //While connecting.
     }
 
+    /**
+     * This method generates and returns an array, representing all nodes on the graph.
+     * This helps Iterating over the graph if node keys are for example: 0, 13, 22, 4, 923, ...
+     * @param g - A given graph.
+     * @return an array of size |V| ([0, |V|-1], |V| = graph.nodeSize()).
+     */
     private int[] nodesToArray(directed_weighted_graph g) {
         int[] ans = new int[g.nodeSize()];
         int i = 0;
@@ -231,6 +242,13 @@ class DWGraph_AlgoTest {
         return ans;
     }
 
+    /**
+     * This method simply creates and returns a directed, weighted graph with v_size nodes
+     * and e_size edges.
+     * @param v_size - Number of nodes for the graph.
+     * @param e_size - Number of edges for the graph.
+     * @return - directed_weighted_graph Object with v_size nodes and e_size edges.
+     */
     directed_weighted_graph makeGraph(int v_size, int e_size) {
 
         g = new DWGraph_DS();
