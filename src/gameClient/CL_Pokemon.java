@@ -21,16 +21,17 @@ public class CL_Pokemon {
         min_ro = -1;
     }
     public static CL_Pokemon init_from_json(String json) {
-        CL_Pokemon ans = null;
-        try {
-            JSONObject p = new JSONObject(json);
-            int id = p.getInt("id");
-
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-        return ans;
+//        CL_Pokemon ans = null;
+//        try {
+//            JSONObject p = new JSONObject(json);
+//            int id = p.getInt("id");
+//
+//        }
+//        catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//        return ans;
+        return null;
     }
     public String toString() {return "F:{v="+_value+", t="+_type+"}";}
     public edge_data get_edge() {
