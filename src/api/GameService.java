@@ -15,7 +15,6 @@ public class GameService implements game_service{
     dw_graph_algorithms graph;
     List<CL_Agent> agents;
     List<CL_Pokemon> pokemons;
-    static int agentsNum,pokemonsNum;
     Arena arenaGame;
     Boolean gameStatus;
 
@@ -23,8 +22,6 @@ public class GameService implements game_service{
         graph=new DWGraph_Algo();
         pokemons=new ArrayList<CL_Pokemon>();
         agents=new ArrayList<CL_Agent>();
-        agentsNum=0;
-        pokemonsNum=0;
         gameStatus=false;
     }
 
@@ -32,8 +29,6 @@ public class GameService implements game_service{
         graph=g;
         this.pokemons=pokemons;
         this.agents=agents;
-        agentsNum=0;
-        pokemonsNum=0;
         gameStatus=false;
     }
     /**
@@ -104,10 +99,9 @@ public class GameService implements game_service{
      */
     @Override
     public boolean addAgent(int start_node) {
-        if(agentsNum<agents.size())
+        if(graph.getGraph().getNode(start_node)!=null && graph.getGraph()!=null)
         {
             CL_Agent agent=new CL_Agent(graph.getGraph(),start_node);
-            agentsNum++;
             return true;
         }
         return false;
@@ -165,7 +159,7 @@ public class GameService implements game_service{
      * @return the time the action was performed (-1 if not performed).
      */
     @Override
-    public long chooseNextEdge(int id, int next_node) {
+        public long chooseNextEdge(int id, int next_node) {
         return 0;
     }
 
