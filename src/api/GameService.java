@@ -102,6 +102,7 @@ public class GameService implements game_service{
         if(graph.getGraph().getNode(start_node)!=null && graph.getGraph()!=null)
         {
             CL_Agent agent=new CL_Agent(graph.getGraph(),start_node);
+            agents.add(agent);
             return true;
         }
         return false;
