@@ -18,7 +18,8 @@ import java.util.List;
 
 public class Ex2 {
 
-    static List<CL_Pokemon> _pokemons;
+    private static List<CL_Pokemon> _pokemons;
+    private static List<CL_Agent> _agents;
 
     public static void main(String[] args) {
 
@@ -45,7 +46,10 @@ public class Ex2 {
             JsonObject poke = pokemon.getAsJsonObject();
             String s = poke.toString();
             System.out.println(s);
+            _pokemons.add(CL_Pokemon.init_from_json(s));
         }
+
+        System.out.println(_pokemons);
 
 
     }
