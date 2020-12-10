@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CL_Pokemon {
@@ -45,24 +46,26 @@ public class CL_Pokemon {
             edge_data edge=new EdgeData();
             double value;
             int type;
-            FileReader reader = new FileReader(json);
-            JsonObject poke = new JsonParser().parse(reader).getAsJsonObject();
-            String pos = ((JsonObject) poke).get("pos").toString();
+            JsonObject pokeJson = new JsonParser().parse(json).getAsJsonObject();
+            JsonObject pocemonJson = pokeJson.getAsJsonObject("Pokemon");
+
+            String pos = pocemonJson.get("pos").getAsString();
             String[] posArr = pos.split(",");
             double x = Double.parseDouble(posArr[0]);
             double y = Double.parseDouble(posArr[1]);
             double z = Double.parseDouble(posArr[2]);
             geo_location location = new Point3D(x, y, z);
             Point3D location1=new Point3D(x,y,z);
-            value = ((JsonObject) poke).get("value").getAsDouble();
-            type = ((JsonObject) poke).get("type").getAsInt();
+
+            value = pocemonJson.get("value").getAsDouble();
+            type = pocemonJson.get("type").getAsInt();
             CL_Pokemon pokemon=new CL_Pokemon(location1,type,value,edge);
+
             return pokemon;
-        } catch (FileNotFoundException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
             return null;
         }
-//        return null;
     }
     public String toString() {return "Pokemon:{v="+_value+", t="+_type+", pos="+_pos+"}";}
     public edge_data get_edge() {
