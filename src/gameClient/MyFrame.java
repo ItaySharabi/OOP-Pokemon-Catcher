@@ -38,7 +38,8 @@ public class MyFrame extends JFrame{
         Range ry = new Range(this.getHeight()-10,150);
         Range2D frame = new Range2D(rx,ry);
         directed_weighted_graph g = _ar.getGraph();
-        _w2f = Arena.w2f(g,frame);
+        _w2f = Arena.w2f(g,frame); //Receive a Range2Range object that is built of 2 Range2D's:
+                                   //Range of graph and Range of frame.
     }
     public void paint(Graphics g) {
         int w = this.getWidth();

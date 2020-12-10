@@ -147,32 +147,37 @@ public class Arena {
         return isOnEdge(p,src, dest, g);
     }
 
+    /**
+     * Calculate how much space is needed to display the graph.
+     * @param g - the graph to display.
+     * @return a Range2D: Range x = [x0,x1], Range y = [y0,y1].
+     */
     private static Range2D GraphRange(directed_weighted_graph g) {
-        Iterator<node_data> itr = g.getV().iterator();
+        Iterator<node_data> itr = g.getV().iterator(); //Iterate Over g's node collection
         double x0=0,x1=0,y0=0,y1=0;
         boolean first = true;
         while(itr.hasNext()) {
-            geo_location p = itr.next().getLocation();
+            geo_location p = itr.next().getLocation(); //Get the node's geo location (a point).
             if(first) {
-                x0=p.x(); x1=x0;
-                y0=p.y(); y1=y0;
-                first = false;
+                x0=p.x(); x1=x0; //For the first run,
+                y0=p.y(); y1=y0; //set x0,x1 as the the location value of the first node.
+                first = false;   //Same for y0,y1.
             }
-            else {
-                if(p.x()<x0) {x0=p.x();}
-                if(p.x()>x1) {x1=p.x();}
-                if(p.y()<y0) {y0=p.y();}
-                if(p.y()>y1) {y1=p.y();}
+            else { //For all other nodes:
+                if(p.x()<x0) {x0=p.x();} //x0 will set the min value for Range [x0,x1]
+                if(p.x()>x1) {x1=p.x();} //x1 will set the max value for Range [x0,x1]
+                if(p.y()<y0) {y0=p.y();} //y0 will set the min value for Range [y0,y1]
+                if(p.y()>y1) {y1=p.y();} //y1 will set the max value for Range [y0,y1]
             }
         }
-        Range xr = new Range(x0,x1);
+        Range xr = new Range(x0,x1); //Build Ranges
         Range yr = new Range(y0,y1);
         return new Range2D(xr,yr);
     }
     public static Range2Range w2f(directed_weighted_graph g, Range2D frame) {
-        Range2D world = GraphRange(g);
-        Range2Range ans = new Range2Range(world, frame);
-        return ans;
+        Range2D world = GraphRange(g); //Return a Range2D, big enough to display the graph.
+        Range2Range ans = new Range2Range(world, frame); //The Range2Range to return, Built of 2 Range2D objects,
+        return ans; //The graph Range and the frame Range.
     }
 
 }
