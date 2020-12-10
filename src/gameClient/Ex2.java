@@ -24,8 +24,7 @@ public class Ex2 {
 
         int level = 23;
         _game = Game_Server_Ex2.getServer(level);
-        _pokemons = Arena.json2Pokemons(_game.getPokemons());
-
+        _pokemons = Arena.json2Pokemons(_game.getPokemons()); //json2Pokemons() not implemented yet.
 
 
         dw_graph_algorithms ga = new DWGraph_Algo(loadGraphFromJson(_game.getGraph()));

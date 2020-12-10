@@ -22,7 +22,7 @@ public class Ex2_Client implements Runnable{
 
     @Override
     public void run() {
-        int scenario_num = 11;
+        int scenario_num = 0;
         game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
         //	int id = 999;
         //	game.login(id);
@@ -56,12 +56,12 @@ public class Ex2_Client implements Runnable{
      * Moves each of the agents along the edge,
      * in case the agent is on a node the next destination (next edge) is chosen (randomly).
      * @param game
-     * @param gg
+     * @param graph
      * @param
      */
-    private static void moveAgants(game_service game, directed_weighted_graph gg) {
+    private static void moveAgants(game_service game, directed_weighted_graph graph) {
         String lg = game.move();
-        List<CL_Agent> log = Arena.getAgents(lg, gg);
+        List<CL_Agent> log = Arena.getAgents(lg, graph);
         _ar.setAgents(log);
         //ArrayList<OOP_Point3D> rs = new ArrayList<OOP_Point3D>();
         String fs =  game.getPokemons();
@@ -74,7 +74,7 @@ public class Ex2_Client implements Runnable{
             int src = ag.getSrcNode();
             double v = ag.getValue();
             if(dest==-1) {
-                dest = nextNode(gg, src);
+                dest = nextNode(graph, src);
                 game.chooseNextEdge(ag.getID(), dest);
                 System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
             }
