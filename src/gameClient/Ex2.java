@@ -55,13 +55,13 @@ public class Ex2 {
 
         dw_graph_algorithms ga = new DWGraph_Algo();
         try {
-            FileWriter writer = new FileWriter("Arena1");
+            FileWriter writer = new FileWriter("Arena1.json");
             writer.write(_game.getGraph());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-            ga.load("Arena1");
+        ga.load("Arena1.json");
         return ga.getGraph();
     }
 }
