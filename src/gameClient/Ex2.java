@@ -11,11 +11,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class Ex2 {
+public class Ex2 implements Runnable {
 
     private static List<CL_Pokemon> _pokemons;
     private static List<CL_Agent> _agents;
@@ -24,13 +22,13 @@ public class Ex2 {
     private static MyFrame _win;
     public static void main(String[] args) {
 
-        int level = 23;
+        int level = 0;
         _game = Game_Server_Ex2.getServer(level);
         _pokemons = Arena.json2Pokemons(_game.getPokemons()); //json2Pokemons() not implemented yet.
-        init(_game);
+//        init(_game);
         dw_graph_algorithms ga = new DWGraph_Algo(loadGraphFromJson(_game.getGraph()));
-        _agents=Arena.getAgents(_game.getAgents(), ga.getGraph());
-        System.out.println(_agents);
+//        _agents=Arena.getAgents(_game.getAgents(), ga.getGraph());
+//        System.out.println(_agents);
 
         JsonObject json;
         json = new JsonParser().parse(_game.getPokemons()).getAsJsonObject();
@@ -45,8 +43,9 @@ public class Ex2 {
 
         System.out.println(_pokemons);
 
+        Thread client = new Thread(new Ex2());
+        client.start();
         File f = new File("Arena1");
-
         f.deleteOnExit();
         f.delete();
 
@@ -102,4 +101,83 @@ public class Ex2 {
         }
         catch (JSONException e) {e.printStackTrace();}
     }
+
+    @Override
+    public void run() {
+//        int scenario_num = 0;
+//        game_service game = Game_Server_Ex2.getServer(scenario_num); // you have [0,23] games
+        //	int id = 999;
+        //	game.login(id);
+        String g = _game.getGraph();
+        String pks = _game.getPokemons();
+        directed_weighted_graph gg = _game.getJava_Graph_Not_to_be_used();
+        init(_game);
+
+        _game.startGame();
+        _win.setTitle("Ex2 - OOP: (NONE trivial Solution) "+_game.toString());
+        int ind=0;
+        long dt=100;
+
+        while(_game.isRunning()) {
+            moveAgants(_game, gg);
+            try {
+                if(ind%1==0) {_win.repaint();}
+                Thread.sleep(dt);
+                ind++;
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String res = _game.toString();
+
+        System.out.println(res);
+        System.exit(0);
+    }
+    /**
+     * Moves each of the agents along the edge,
+     * in case the agent is on a node the next destination (next edge) is chosen (randomly).
+     * @param game
+     * @param graph
+     * @param
+     */
+    private static void moveAgants(game_service game, directed_weighted_graph graph) {
+        String lg = game.move();
+        List<CL_Agent> log = Arena.getAgents(lg, graph);
+        _ar.setAgents(log);
+        //ArrayList<OOP_Point3D> rs = new ArrayList<OOP_Point3D>();
+        String fs =  game.getPokemons();
+        List<CL_Pokemon> ffs = Arena.json2Pokemons(fs);
+        _ar.setPokemons(ffs);
+        for(int i=0;i<log.size();i++) {
+            CL_Agent ag = log.get(i);
+            int id = ag.getID();
+            int dest = ag.getNextNode();
+            int src = ag.getSrcNode();
+            double v = ag.getValue();
+            if(dest==-1) {
+                dest = nextNode(graph, src);
+                game.chooseNextEdge(ag.getID(), dest);
+                System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+            }
+        }
+    }
+    /**
+     * a very simple random walk implementation!
+     * @param g
+     * @param src
+     * @return
+     */
+    private static int nextNode(directed_weighted_graph g, int src) {
+        int ans = -1;
+        Collection<edge_data> ee = g.getE(src);
+        Iterator<edge_data> itr = ee.iterator();
+        int s = ee.size();
+        int r = (int)(Math.random()*s);
+        int i=0;
+        while(i<r) {itr.next();i++;}
+        ans = itr.next().getDest();
+        return ans;
+    }
+
 }
