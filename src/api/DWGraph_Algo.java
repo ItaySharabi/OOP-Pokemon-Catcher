@@ -2,13 +2,7 @@ package api;
 
 import com.google.gson.*;
 import gameClient.util.Point3D;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.w3c.dom.Node;
-
-import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.List;
 
@@ -22,62 +16,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     public DWGraph_Algo(directed_weighted_graph g) {
         init(g);
-    }
-
-    public static void main(String[] args) {
-
-        directed_weighted_graph graph = new DWGraph_DS();
-        dw_graph_algorithms ga = new DWGraph_Algo();
-        directed_weighted_graph g = ga.getGraph();
-        g.addNode(new NodeData(0));
-        g.addNode(new NodeData(1));
-        g.addNode(new NodeData(2));
-        g.addNode(new NodeData(3));
-        g.addNode(new NodeData(4));
-        g.addNode(new NodeData(5));
-//        g.addNode(new NodeData(6));
-//        g.connect(1, 0, 1);
-//        g.connect(0, 2, 1);
-//        g.connect(2, 4, 1);
-//        g.connect(1, 2, 1);
-//        g.connect(3, 2, 1);
-//        g.connect(4, 3, 1);
-//        g.connect(1, 0, 1);
-//        g.connect(5, 6, 1);
-//        g.connect(6, 5, 1);
-        ga.init(g);
-        System.out.println(ga.isConnected());
-        g.addNode(new NodeData(5));
-        g.connect(0, 1, 8.33);
-        g.connect(1, 3, 2.1);
-        g.connect(3, 4, 4.9);
-        g.connect(0, 2, 4.2);
-        g.connect(0, 3, 3.3);
-        g.connect(3, 5, 15.7);
-        g.connect(0, 5, 100.4);
-        g.connect(4, 5, 1.4);
-        g.connect(5, 4, 13.4);
-        g.connect(1, 4, 17.4);
-        g.connect(2, 5, 11.5);
-        g.connect(5, 0, 0.5);
-        g.connect(3, 1, 7.5);
-        g.connect(3, 2, 1.96);
-        g.connect(2, 0, 13.7);
-        g.connect(4, 3, 3.7);
-        System.out.println(graph);
-        ga.init(g);
-        System.out.println(ga.shortestPath(0, 5));
-
-        ga.save("MyFile.txt");
-        dw_graph_algorithms ga2 = new DWGraph_Algo();
-        ga2.load("MyFile.txt");
-        System.out.println(ga2.getGraph());
-        System.out.println(ga2.getGraph().equals(ga.getGraph()));
-
-        if (ga.copy().equals(ga.getGraph())) System.out.println("copy equals getGraph");
-        if (ga.getGraph().equals(ga.load("MyFile.txt"))) System.out.println("getGraph equals load");
-
-
     }
 
     /**
@@ -179,7 +117,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         while (!pq.isEmpty()) {
 
             curr = pq.poll();
-            System.out.println("Popped from queue: " + curr.getKey() + ", with weight: " + curr.getWeight());
+//            System.out.println("Popped from queue: " + curr.getKey() + ", with weight: " + curr.getWeight());
 
             for (edge_data outEdge : graph.getE(curr.getKey())) {
                 neighbor = graph.getNode(outEdge.getDest());

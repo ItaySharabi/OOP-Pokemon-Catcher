@@ -85,8 +85,8 @@ public class MyFrame extends JFrame{
                 CL_Pokemon f = itr.next();
                 Point3D c = f.getLocation();
                 int r=10;
-                g.setColor(Color.green);
-                if(f.getType()<0) {g.setColor(Color.orange);}
+                g.setColor(Color.green); // type 1 ---> green -- src<dest -- outgoing edge
+                if(f.getType()<0) {g.setColor(Color.orange);} // type -1 ---> orange src>dest -- outgoing edge
                 if(c!=null) {
 
                     geo_location fp = this._w2f.world2frame(c);
