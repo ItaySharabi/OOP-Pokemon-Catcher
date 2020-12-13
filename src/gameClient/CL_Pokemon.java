@@ -2,6 +2,7 @@ package gameClient;
 import api.EdgeData;
 import api.edge_data;
 import api.geo_location;
+import api.node_data;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gameClient.util.Point3D;
@@ -41,6 +42,7 @@ public class CL_Pokemon {
         min_ro = -1;
     }
 
+
     public static CL_Pokemon init_from_json(String json) {
         try {
             edge_data edge=new EdgeData();
@@ -67,7 +69,7 @@ public class CL_Pokemon {
             return null;
         }
     }
-    public String toString() {return "Pokemon:{v="+_value+", t="+_type+", pos="+_pos+"}";}
+    public String toString() {return "Pokemon:{v="+_value+", t="+_type+", pos="+_pos+" ,edge ="+_edge+"}";}
     public edge_data get_edge() {
         return _edge;
     }

@@ -88,6 +88,9 @@ public class CL_Agent {
     public void setCurrNode(int src) {
         this._curr_node = _gg.getNode(src);
     }
+    public node_data getCurrNode() {
+        return _curr_node;
+    }
     public boolean isMoving() {
         return this._curr_edge!=null;
     }
