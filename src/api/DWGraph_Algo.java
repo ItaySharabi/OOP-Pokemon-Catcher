@@ -4,6 +4,7 @@ import com.google.gson.*;
 import gameClient.util.Point3D;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Node;
 
 import java.awt.*;
 import java.io.*;
@@ -120,65 +121,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     public boolean isConnected() {
         if (graph.getV().size() <= 1) return true; //A graph with 0 or 1 nodes is a connected graph.
 
-        for (node_data n : graph.getV()) //If isConnectedBFS returns false then the graph isn't connected.
-            if (!isConnectedBFS(n))
-                return false;
-
-        return true;
-    }
-
-    private boolean isConnectedBFS(node_data start) {
-        resetTags();
-
-        node_data curr = start;
-        node_data neighbor = null;
-        resetTags(); // Was added to make sure all node's tags are reset.
-        Queue<node_data> queue = new LinkedList<>();
-        queue.add(curr);
-        curr.setTag(1);
-
-        while (!queue.isEmpty()) {
-            curr = queue.poll();
-            Collection<edge_data> outEdges = graph.getE(curr.getKey());
-            if (outEdges.size() == 0)
-                return false; //If a single node has no outgoing edges - the graph is not connected.
-
-            for (edge_data e : outEdges) { //Iterate over outgoing edges from curr
-                neighbor = graph.getNode(e.getDest());
-
-                if (neighbor.getTag() == 0) { //If neighbor is not a visited node
-                    queue.add(neighbor); //Add it to the queue
-                    neighbor.setTag(1); //Mark it as visited
-                }
-            }
-        }
-
-        if (allNodesWereVisited(graph))
-            return true;
-
-        return false;
-    }
-
-    /**
-     * This method checks if all nodes on the graph have been visited.
-     * If one node was not visited then returns false - meaning one node was not reached through another node.
-     *
-     * @param graph - this graph.
-     * @return true iff all nodes on the graph were visited.
-     */
-    private boolean allNodesWereVisited(directed_weighted_graph graph) {
-        for (node_data n : graph.getV())
-            if (n.getTag() == 0) return false;
-
-        return true;
-    }
-
-    // Returns the first node encountered in this graph's node collection.
-    // O(1).
-    private node_data getFirstNode(directed_weighted_graph graph) {
-        for (node_data n : graph.getV())
-            return n;
-        return null;
+        node_data start = getFirstNode(graph);
+        return isConnectedBFS(start) & Kosaraju(start);
     }
 
     /**
@@ -257,29 +201,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             path = rebuildPath(src, dest, prevNode);
 
         return path;
-    }
-
-    private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
-        List<node_data> path = new LinkedList<node_data>();
-
-        node_data current = graph.getNode(dest), next = null;
-        current.setTag(0);
-        path.add(current);
-
-        while (current.getKey() != src) {
-            next = prevNode.get(current.getKey()); //Extract the node who called current node.
-            next.setTag(0); //Set tag to 0 (resetTags()) because nodes are deep copied with tag == 1.
-            path.add(new NodeData(next)); //Add a deep copy of 'next' to the list.
-            current = next; //Increment current node.
-        }
-
-        Collections.reverse(path);
-        return path; //Return a path with all copied nodes on the requested path.
-    }
-
-    private void setWeightInfinity() {
-
-        for (node_data n : graph.getV()) n.setWeight(Double.MAX_VALUE + 1);
     }
 
     /**
@@ -386,10 +307,149 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         return false;
     }
 
+    /**
+     * resets all tags to 0.
+     */
     private void resetTags() {
         for (node_data n : graph.getV())
             n.setTag(0);
     }
+
+    /**
+     * This method transposes the given graph g.
+     * The new graph will have the same set of vertices V = {v1, v2, .. , v(n)},
+     * And all transposed edges. E = {(v1,v2), (v2,v6), .. }, E(trnasposed) = {(v2,v1), (v6,v2), ..}.
+     * @param g - the given graph.
+     * @return a transposed directed_weighted_graph.
+     */
+    private directed_weighted_graph transpose (directed_weighted_graph g) {
+        if (g == null) return null;
+
+        directed_weighted_graph transposed = new DWGraph_DS();
+
+        for (node_data node : g.getV()) transposed.addNode(new NodeData(node)); //Add all nodes to the graph.
+
+        for (node_data node : g.getV()) //For each node in the original graph
+            for (edge_data edge : g.getE(node.getKey())) //Iterate over all outgoing edges
+                transposed.connect(edge.getDest(), edge.getSrc(), edge.getWeight());//And connect upside-down.
+
+        return transposed;
+    }
+
+    /**
+     * This method checks if all nodes on the graph have been visited.
+     * If one node was not visited then returns false - meaning one node was not reached through another node.
+     *
+     * @param graph - this graph.
+     * @return true iff all nodes on the graph were visited.
+     */
+    private boolean allNodesWereVisited(directed_weighted_graph graph) {
+        for (node_data n : graph.getV())
+            if (n.getTag() == 0) return false;
+
+        return true;
+    }
+
+    /**
+     * Set all weights to infinity.
+     */
+    private void setWeightInfinity() {
+
+        for (node_data n : graph.getV()) n.setWeight(Double.MAX_VALUE + 1);
+    }
+
+    /**
+     * This methods rebuilds the path from node src to node dest.
+     * This map 'prevNode' holds the information to build the path,
+     * of which node was called from which node.
+     * @param src - the beginning of the list
+     * @param dest - the end of the list
+     * @param prevNode - info
+     * @return a list containing all nodes on the shortest path from src to dest.
+     */
+    private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
+        List<node_data> path = new LinkedList<node_data>();
+
+        node_data current = graph.getNode(dest), next = null;
+        current.setTag(0);
+        path.add(current);
+
+        while (current.getKey() != src) {
+            next = prevNode.get(current.getKey()); //Extract the node who called current node.
+            next.setTag(0); //Set tag to 0 (resetTags()) because nodes are deep copied with tag == 1.
+            path.add(new NodeData(next)); //Add a deep copy of 'next' to the list.
+            current = next; //Increment current node.
+        }
+
+        Collections.reverse(path);
+        return path; //Return a path with all copied nodes on the requested path.
+    }
+
+
+    /**
+     * This method uses the private methods transpose() and isConnectedBFS()
+     * to transpose the this.graph and re-execute isConnectedBFS() on the same graph.
+     * @param start
+     * @return
+     */
+    private boolean Kosaraju(node_data start) {
+        boolean isConnected = false;
+        directed_weighted_graph transposed = transpose(graph);
+        System.out.println(transposed);
+
+        directed_weighted_graph temp = getGraph();
+        graph = transposed;
+        isConnected = isConnectedBFS(start);
+        graph = temp;
+        return isConnected;
+    }
+
+    /**
+     * Explore the graph Breadth-First and mark all nodes passed by as visited.
+     * if all nodes of the graph were visited in 1 executions, this method returns true.
+     * @param start - the node to start traversing from.
+     * @return true or false, if all nodes could be reached from start node.
+     */
+    private boolean isConnectedBFS(node_data start) {
+        resetTags();
+
+        node_data curr = start;
+        node_data neighbor = null;
+        resetTags(); // Was added to make sure all node's tags are reset.
+        Queue<node_data> queue = new LinkedList<>();
+        queue.add(curr);
+        curr.setTag(1);
+
+        while (!queue.isEmpty()) {
+            curr = queue.poll();
+            Collection<edge_data> outEdges = graph.getE(curr.getKey());
+            if (outEdges.size() == 0)
+                return false; //If a single node has no outgoing edges - the graph is not connected.
+
+            for (edge_data e : outEdges) { //Iterate over outgoing edges from curr
+                neighbor = graph.getNode(e.getDest());
+
+                if (neighbor.getTag() == 0) { //If neighbor is not a visited node
+                    queue.add(neighbor); //Add it to the queue
+                    neighbor.setTag(1); //Mark it as visited
+                }
+            }
+        }
+
+        if (allNodesWereVisited(graph))
+            return true;
+
+        return false;
+    }
+
+    // Returns the first node encountered in this graph's node collection.
+    // O(1).
+    private node_data getFirstNode(directed_weighted_graph graph) {
+        for (node_data n : graph.getV())
+            return n;
+        return null;
+    }
+
 
     @Override
     public String toString() {
