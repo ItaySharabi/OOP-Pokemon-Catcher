@@ -22,6 +22,7 @@ public class CL_Pokemon {
     private Point3D _pos;
     private double min_dist;
     private int min_ro;
+    private boolean isTracked=false; // TODO: should be defined in the constructor
 
     public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
         _type = t;
@@ -69,7 +70,7 @@ public class CL_Pokemon {
             return null;
         }
     }
-    public String toString() {return "Pokemon:{v="+_value+", t="+_type+", pos="+_pos+" ,edge ="+_edge+"}";}
+    public String toString() {return "Pokemon:{v="+_value+", t="+_type+", pos="+_pos+" ,edge ="+_edge+" ,isTrack= "+getisTracked()+"}";}
     public edge_data get_edge() {
         return _edge;
     }
@@ -99,5 +100,13 @@ public class CL_Pokemon {
 
     public void setMin_ro(int min_ro) {
         this.min_ro = min_ro;
+    }
+
+    public boolean setisTracked(boolean isTracked) {
+        return this.isTracked=isTracked;
+    }
+
+    public boolean getisTracked() {
+        return this.isTracked;
     }
 }
