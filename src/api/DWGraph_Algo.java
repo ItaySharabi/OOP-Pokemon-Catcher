@@ -98,7 +98,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         resetTags();
 
         if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
-        if (src == dest || graph.getE(src).size() == 0) return null;
+        if (src == dest || graph.getE(src).size() == 0) return null; // TODO: should be check
 
         HashMap<Integer, node_data> prevNode = new HashMap<Integer, node_data>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
