@@ -24,6 +24,8 @@ public class MyFrame extends JFrame{
     private int _ind;
     private Arena _ar;
     private gameClient.util.Range2Range _w2f;
+    private Image dbImage;
+    private Graphics dbGraphic;
     MyFrame(String a) {
         super(a);
         int _ind = 0;
@@ -41,7 +43,20 @@ public class MyFrame extends JFrame{
         _w2f = Arena.w2f(g,frame); //Receive a Range2Range object that is built of 2 Range2D's:
                                    //Range of graph and Range of frame.
     }
+
+    /**
+     * This method add to make the frame running clean.
+     * Token from: https://www.youtube.com/watch?v=4T3WJEH7zrc&feature=youtu.be
+     * @param g
+     */
     public void paint(Graphics g) {
+        dbImage =createImage(getWidth(),getHeight());
+        dbGraphic = dbImage.getGraphics();
+        paintComponent(dbGraphic);
+        g.drawImage(dbImage,0,0,this);
+    }
+
+    public void paintComponent(Graphics g) {
         int w = this.getWidth();
         int h = this.getHeight();
         g.clearRect(0, 0, w, h);

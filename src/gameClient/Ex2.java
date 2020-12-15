@@ -23,7 +23,7 @@ public class Ex2 implements Runnable {
 
     public static void main(String[] args) {
 
-        int level = 0;
+        int level = 11;
         _game = Game_Server_Ex2.getServer(level);
         init();
         Thread client = new Thread(new Ex2());
@@ -107,7 +107,7 @@ public class Ex2 implements Runnable {
             int id = ag.getID();
             int dest;
             if(agentCurrentPath!=null) { // list exist
-                if (agentCurrentPath.size() >= 1)
+                if (agentCurrentPath.size() > 1)
                     dest = agentCurrentPath.get(1).getKey(); // Next dest will always be at index 1 on the list.
                 else dest=ag.get_curr_fruit().get_edge().getDest(); // Catch the pokemon
             }
@@ -124,7 +124,7 @@ public class Ex2 implements Runnable {
             double v = ag.getValue();
 //            if(dest==-1) {
 //                dest=agentPath.get(id).remove(ag.getSrcNode()).getKey();
-                System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+            System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
 //            }
         }
     }
@@ -279,11 +279,9 @@ public class Ex2 implements Runnable {
                         else
                             sleep =50;//3
                     }
-
                 }
             }
         }
         return sleep;
     }
-
 }
