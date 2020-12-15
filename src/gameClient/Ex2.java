@@ -23,7 +23,7 @@ public class Ex2 implements Runnable {
 
     public static void main(String[] args) {
 
-        int level = 1;
+        int level = 0;
         _game = Game_Server_Ex2.getServer(level);
         init();
         Thread client = new Thread(new Ex2());
@@ -88,6 +88,7 @@ public class Ex2 implements Runnable {
      */
     private static void moveAgants(game_service game, directed_weighted_graph graph) {
         String lg = game.move(); // Need to use at least 10 times in 1 sec according to boaz instruction
+        _win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + _game.toString());
         _agents = Arena.getAgents(lg, graph); //receive the last update for agents locations after game.move().
         _ar.setAgents(_agents);
         String fs = game.getPokemons();
@@ -110,7 +111,7 @@ public class Ex2 implements Runnable {
                     dest = agentCurrentPath.get(1).getKey(); // Next dest will always be at index 1 on the list.
                 else dest=ag.get_curr_fruit().get_edge().getDest(); // Catch the pokemon
             }
-            else dest=ag.get_curr_fruit().get_edge().getDest(); // Catch the pokemon
+            else dest=ag.get_curr_fruit().get_edge().getDest();// Catch the pokemon
             game.chooseNextEdge(id, dest);
 //            ag.setCurrNode(dest);
 //            int src = ag.getSrcNode();
@@ -123,7 +124,7 @@ public class Ex2 implements Runnable {
             double v = ag.getValue();
 //            if(dest==-1) {
 //                dest=agentPath.get(id).remove(ag.getSrcNode()).getKey();
-//                System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
+                System.out.println("Agent: "+id+", val: "+v+"   turned to node: "+dest);
 //            }
         }
     }
@@ -225,7 +226,6 @@ public class Ex2 implements Runnable {
         }
         return poke;
     }
-
     public static void getBestPokemon(CL_Agent ag){
         double dist,minRatio=Double.MAX_VALUE; //minRatio gives the best Pokemon.
         double value,minpath;
@@ -235,7 +235,7 @@ public class Ex2 implements Runnable {
             if (!poke.getisTracked()) {
                 path = dijkstraAllMap.get(ag.getSrcNode()).get(poke.get_edge().getSrc());//Execute a shortestPath Algo from src to dest.
                 if(path!=null) {
-                    minpath = path.get(path.size() - 1).getWeight() + poke.get_edge().getWeight();// dist between curr ag to curr poke
+                    minpath = pathDist(path) + poke.get_edge().getWeight();// dist between curr ag to curr poke
                 }
                else minpath=poke.get_edge().getWeight();
                 value = poke.getValue();
@@ -248,7 +248,42 @@ public class Ex2 implements Runnable {
             }
         }
         ag.set_curr_fruit(pokemon);
+        assert pokemon != null; // TODO: should be check this line.
         pokemon.setisTracked(true);
+    }
+
+    public static double pathDist(List<node_data> path){
+        double weight=0;
+        for (int i=0; i<path.size()-1;i++){
+            node_data node1= path.get(i);
+            node_data node2= path.get(i+1);
+             weight+=graph.getEdge(node1.getKey(),node2.getKey()).getWeight();
+
+        }
+        return weight;
+    }
+
+    /**
+     * this fucn sets for the threads how much to sleep
+     *
+     */
+    private synchronized int timeSleep () {
+        int sleep = 40; //1
+        for (CL_Agent agent: _agents) {
+            if (_pokemons !=null) {
+                for (CL_Pokemon pokemon : _pokemons) {
+                    if (pokemon.get_edge() != null) {
+                        if (agent.getSrcNode() == pokemon.get_edge().getSrc() && agent.getNextNode() == pokemon.get_edge().getDest()) {
+                            sleep = 1; //2
+                        }
+                        else
+                            sleep =50;//3
+                    }
+
+                }
+            }
+        }
+        return sleep;
     }
 
 }
