@@ -22,7 +22,7 @@ public class CL_Pokemon {
     private Point3D _pos;
     private double min_dist;
     private int min_ro;
-    private boolean isTracked=false; // TODO: should be defined in the constructor
+    private boolean isTracked; // TODO: should be defined in the constructor
 
     public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
         _type = t;
@@ -32,6 +32,7 @@ public class CL_Pokemon {
         _pos = p;
         min_dist = -1;
         min_ro = -1;
+        isTracked = false;
     }
 
     public CL_Pokemon(Point3D location1, int type,double value ,edge_data edge) {
@@ -41,6 +42,8 @@ public class CL_Pokemon {
         _pos = location1;
         min_dist = -1;
         min_ro = -1;
+        isTracked = false;
+
     }
 
 

@@ -60,7 +60,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         if (graph.getV().size() <= 1) return true; //A graph with 0 or 1 nodes is a connected graph.
 
         node_data start = getFirstNode(graph);
-        return isConnectedBFS(start) & Kosaraju(start);
+        return isConnectedBFS(start) & Kosaraju(start); // Check is connected of graph and graph transpose on same start node.
     }
 
     /**
@@ -98,7 +98,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         resetTags();
 
         if (graph.getNode(src) == null || graph.getNode(dest) == null) return null;
-        if (src == dest || graph.getE(src).size() == 0) return null; // TODO: should be check
+        if (graph.getE(src).size() == 0) return null;
+        if (src == dest) return new LinkedList<>();
 
         HashMap<Integer, node_data> prevNode = new HashMap<Integer, node_data>(); //A map of parent nodes. for (Integer) key, map (node_info) parent.
 
@@ -127,7 +128,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
                 if (totalDist < neighbor.getWeight()) { //If the total distance is less than the known distance from neighbor to src.
                     neighbor.setWeight(totalDist);
-                    if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)//If the neighbor's key isn't associate with curr's node
+                    if (prevNode.putIfAbsent(neighbor.getKey(), curr) != null)//If the neighbor's key isn't associated with curr's node
                         prevNode.put(neighbor.getKey(), curr);// Update the current calling node in prevNode.
                 }
                 if (!pq.contains(neighbor) && neighbor.getTag() == 0) pq.add(neighbor);
@@ -308,15 +309,15 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
         List<node_data> path = new LinkedList<node_data>();
 
-        node_data current = graph.getNode(dest), next = null;
+        node_data current = graph.getNode(dest), prev = null;
         current.setTag(0);
         path.add(current);
 
         while (current.getKey() != src) {
-            next = prevNode.get(current.getKey()); //Extract the node who called current node.
-            next.setTag(0); //Set tag to 0 (resetTags()) because nodes are deep copied with tag == 1.
-            path.add(new NodeData(next)); //Add a deep copy of 'next' to the list.
-            current = next; //Increment current node.
+            prev = prevNode.get(current.getKey()); //Extract the node who called current node.
+            prev.setTag(0); //Set tag to 0 (resetTags()) because nodes are deep copied with tag == 1.
+            path.add(graph.getNode(prev.getKey())); //Add a deep copy of 'prev' to the list.
+            current = prev; //Increment current node.
         }
 
         Collections.reverse(path);
@@ -333,7 +334,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     private boolean Kosaraju(node_data start) {
         boolean isConnected = false;
         directed_weighted_graph transposed = transpose(graph);
-        System.out.println(transposed);
 
         directed_weighted_graph temp = getGraph();
         graph = transposed;
@@ -349,11 +349,9 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * @return true or false, if all nodes could be reached from start node.
      */
     private boolean isConnectedBFS(node_data start) {
-        resetTags();
-
+        resetTags();// Was added to make sure all node's tags are reset.
         node_data curr = start;
         node_data neighbor = null;
-        resetTags(); // Was added to make sure all node's tags are reset.
         Queue<node_data> queue = new LinkedList<>();
         queue.add(curr);
         curr.setTag(1);
@@ -363,7 +361,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
             Collection<edge_data> outEdges = graph.getE(curr.getKey());
             if (outEdges.size() == 0)
                 return false; //If a single node has no outgoing edges - the graph is not connected.
-
             for (edge_data e : outEdges) { //Iterate over outgoing edges from curr
                 neighbor = graph.getNode(e.getDest());
 
