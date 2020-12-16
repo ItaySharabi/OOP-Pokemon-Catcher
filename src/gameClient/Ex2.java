@@ -16,6 +16,7 @@ public class Ex2 implements Runnable {
     private static Arena _ar;
     private static MyFrame _win;
     private static HashMap<Integer, HashMap<Integer, List<node_data>>> allRoutes;
+    private static HashMap<Integer, HashMap<Integer, Double>> allRoutesDist;
     private static List<node_data> agentCurrentPath;
     private static dw_graph_algorithms graphAlgo;
     private static directed_weighted_graph graph;
@@ -31,7 +32,7 @@ public class Ex2 implements Runnable {
         // In other words--> we need to set the closest agent to the ideal edge
         // (moveAgent() method).
 
-        int level = 11;
+        int level = 23;
         _game = Game_Server_Ex2.getServer(level);
         init();
         Thread client = new Thread(new Ex2());
@@ -64,16 +65,24 @@ public class Ex2 implements Runnable {
         System.out.println("agents \n" + _agents);
         allRoutes = new HashMap<Integer, HashMap<Integer, List<node_data>>>();
         calcAllPaths(graphAlgo);
+        allRoutesDist = new HashMap<Integer, HashMap<Integer, Double>>();
+        calcAllPathsDist(graphAlgo);
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         _game.startGame();
         _win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + _game.toString());
-        long dt = 100; // Created for thread's sleep
+        long dt = 40; // Created for thread's sleep
 
         while (_game.isRunning()) {
-            moveAgents(_game, _ar.getGraph());
+//            synchronized (Ex2.class) {
+            try {
+                moveAgents(_game, _ar.getGraph());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            }
             try {
                 _win.repaint();
                 Thread.sleep(dt);
@@ -95,43 +104,75 @@ public class Ex2 implements Runnable {
      * @param graph
      * @param
      */
-    private static void moveAgents(game_service game, directed_weighted_graph graph) {
+    private static synchronized void moveAgents(game_service game, directed_weighted_graph graph) throws InterruptedException {
+//        Runnable updateAnyTimeThread = new Runnable() {
+//
+//            @Override
+//            public synchronized void run() {
+//                try {
+//                    while (game.isRunning()) {
+//                        String lg = game.move(); // Need to use at least 10 times in 1 sec according to boaz instruction
+//                        _win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + _game.toString());
+//                        _agents = Arena.getAgents(lg, graph); //receive the last update for agents locations after game.move().
+//                        _ar.setAgents(_agents);
+//                        String fs = game.getPokemons();
+//                        _pokemons = Arena.json2Pokemons(fs);
+//
+//                        for (CL_Pokemon poke : _pokemons)
+//                            Arena.updateEdge(poke, graph);
+//                        _ar.setPokemons(_pokemons);
+//
+//                        Thread.sleep(20);//4
+//                    }
+//                }
+//                catch (Exception e) {e.getStackTrace();}
+//            }
+//        };
+//        Thread updateThread = new Thread(updateAnyTimeThread);
+//        updateThread.start();
         String lg = game.move(); // Need to use at least 10 times in 1 sec according to boaz instruction
         _win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + _game.toString());
         _agents = Arena.getAgents(lg, graph); //receive the last update for agents locations after game.move().
         _ar.setAgents(_agents);
         String fs = game.getPokemons();
         _pokemons = Arena.json2Pokemons(fs);
-        boolean isStuck = false;
 
         for (CL_Pokemon poke : _pokemons)
             Arena.updateEdge(poke, graph);
         _ar.setPokemons(_pokemons);
 
+        boolean isStuck = false;
         agentCurrentPath = new LinkedList<>();
         CL_Agent ag;
         int dest;
-        for (int i = 0; i < _ar.getAgents().size(); i++) {
-            ag = _ar.getAgents().get(i);
+//        synchronized (Ex2.class) {
+            for (int i = 0; i < _ar.getAgents().size(); i++) {
+                ag = _ar.getAgents().get(i);
 
-            if (getBestPokemon(ag)) {// Match given agent with the best pokemon on the ideal edge.
-                agentCurrentPath = getShortestPathTo(ag, ag.get_curr_fruit().get_edge().getSrc());
-                trackPokemonsOnList(agentCurrentPath);
-            } else //agent has nowhere to go and needs to go the lowest amount of moves.
-                isStuck = true;
+                if (getBestPokemon(ag)) {// Match given agent with the best pokemon on the ideal edge.
+                    agentCurrentPath = getShortestPathTo(ag, ag.get_curr_fruit().get_edge().getSrc());
+//                    Thread.sleep(10);
+                    trackPokemonsOnList(agentCurrentPath);
+                } else //agent has nowhere to go and needs to go the lowest amount of moves.
+                    isStuck = true;
 
-            int id = ag.getID();
-            if(!isStuck) {
-                if (agentCurrentPath.size() > 1)
-                    dest = agentCurrentPath.get(1).getKey(); // Next dest will always be at index 1 on the list.
-                else dest = ag.get_curr_fruit().get_edge().getDest(); // Catch the pokemon
+                int id = ag.getID();
+                if (!isStuck) {
+                    if (agentCurrentPath.size() > 1)
+                        dest = agentCurrentPath.get(1).getKey(); // Next dest will always be at index 1 on the list.
+                    else {
+//                        System.out.println("happened");
+                        dest = ag.get_curr_fruit().get_edge().getDest(); // Catch the pokemon
+                    }
+                } else {
+//                    System.out.println("happened");
+                    dest = ag.getSrcNode();
+                }
+                game.chooseNextEdge(id, dest);
+                double v = ag.getValue();
+                System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
             }
-            else dest = getMinimalNode(ag.getCurrNode());
-
-            game.chooseNextEdge(id, dest);
-            double v = ag.getValue();
-            System.out.println("Agent: " + id + ", val: " + v + "   turned to node: " + dest);
-        }
+//        }
     }
 
     public static directed_weighted_graph loadGraph(String json) {
@@ -267,19 +308,20 @@ public class Ex2 implements Runnable {
         return poke;
     }
 
-    public static boolean getBestPokemon(CL_Agent ag) {
+    public synchronized static boolean getBestPokemon(CL_Agent ag) throws InterruptedException {
         double dist, minRatio = Double.MAX_VALUE; //minRatio gives the best Pokemon.
         double value, minpath;
         boolean isMatched = true;
 
         CL_Pokemon pokemon = null;
         List<node_data> path; //Execute a shortestPath Algo from src to dest.
+        Thread.sleep(30);
         for (CL_Pokemon poke : _pokemons) {
             if (!poke.getisTracked()) {
 
                 path = allRoutes.get(ag.getSrcNode()).get(poke.get_edge().getSrc());//Execute a shortestPath Algo from src to dest.
                 if (path != null) {
-                    minpath = pathDist(path) + poke.get_edge().getWeight();// dist between curr ag to curr poke
+                    minpath = allRoutesDist.get(ag.getSrcNode()).get(poke.get_edge().getDest());// dist between curr ag to curr poke
                 } else minpath = poke.get_edge().getWeight();
 
                 value = sumEdgeValue(poke.get_edge());
@@ -294,7 +336,6 @@ public class Ex2 implements Runnable {
 
         ag.set_curr_fruit(pokemon);
         if (ag.get_curr_fruit() == null) isMatched = false;
-//        pokemon.setisTracked(true);
         return isMatched;
     }
 
@@ -335,7 +376,7 @@ public class Ex2 implements Runnable {
      * @param edge
      * @return
      */
-    private static double sumEdgeValue(edge_data edge) {
+    private synchronized static double sumEdgeValue(edge_data edge) {
         double sum = 0;
         for (CL_Pokemon poke : _pokemons) {
             if (poke.get_edge().equals(edge)) sum += poke.getValue();
@@ -348,7 +389,7 @@ public class Ex2 implements Runnable {
      *
      * @param path
      */
-    public static void trackPokemonsOnList(List<node_data> path) {
+    public synchronized static void trackPokemonsOnList(List<node_data> path) {
 
         edge_data edge;
         for (int i = 0; i < path.size() - 1; i++) {
@@ -364,7 +405,7 @@ public class Ex2 implements Runnable {
      *
      * @param e
      */
-    public static void trackPokemonsOnEdge(edge_data e) {
+    public synchronized static void trackPokemonsOnEdge(edge_data e) {
         for (CL_Pokemon poke : _pokemons) {
             if (!poke.getisTracked())
                 if (poke.get_edge().equals(e)) poke.setisTracked(true);
@@ -396,6 +437,35 @@ public class Ex2 implements Runnable {
                 int dest = destNode.getKey();
                 List<node_data> list = graphAlgo.shortestPath(src, dest);
                 allRoutes.get(src).put(dest, list);
+            }
+        }
+    }
+
+    /**
+     * This method computes and stores all shortest paths distance from
+     * all nodes on the graph to all others.
+     * Stores the data in a HashMap<K,V> allRoutesDist.
+     *
+     * @param graphAlgo
+     */
+    public static void calcAllPathsDist(dw_graph_algorithms graphAlgo) { // need to change a little
+        directed_weighted_graph graph = graphAlgo.getGraph();
+        //added empty map to add values after
+        Iterator<node_data> itr = graph.getV().iterator();
+
+        while (itr.hasNext()) {
+            HashMap<Integer, Double> innerHashMap = new HashMap<Integer, Double>(); //Init new HashMap for a node
+            allRoutesDist.put(itr.next().getKey(), innerHashMap); //Put (node, pathsMap).
+        }
+
+        //Iterate over all graph nodes
+        for (node_data node : graph.getV()) {
+            int src = node.getKey();
+
+            for (node_data destNode : graph.getV()) {
+                int dest = destNode.getKey();
+                double weight = pathDist(allRoutes.get(src).get(dest));
+                allRoutesDist.get(src).put(dest, weight);
             }
         }
     }
