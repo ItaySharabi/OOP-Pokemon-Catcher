@@ -133,6 +133,10 @@ public class CL_Agent {
         return this._speed;
     }
 
+    public geo_location get_pos() {
+        return _pos;
+    }
+
     public void setSpeed(double v) {
         this._speed = v;
     }
