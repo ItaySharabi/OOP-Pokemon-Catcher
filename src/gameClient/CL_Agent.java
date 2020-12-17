@@ -146,6 +146,12 @@ public class CL_Agent {
     public void set_curr_fruit(CL_Pokemon curr_fruit) {
         this._curr_fruit = curr_fruit;
     }
+
+    /**
+     * TODO:
+     * This is an important method we will need to use this!!!
+     * @param ddtt
+     */
     public void set_SDT(long ddtt) {
         long ddt = ddtt;
         if(this._curr_edge!=null) {
