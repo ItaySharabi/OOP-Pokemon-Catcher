@@ -33,18 +33,18 @@ public class Ex2 implements Runnable {
         //TODO: Login screen.
 
 //        for (int i = _level; i < 24; _level++) {
-            try {
-                if (client != null)
-                    client.join();
-                client = new Thread(new Ex2(args[0], args[1]));
-                _game = Game_Server_Ex2.getServer(_level);
-                loginScreen(_id);
-                init();
-                client.start();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            if (client != null)
+                client.join();
+            client = new Thread(new Ex2(args[0], args[1]));
+            _game = Game_Server_Ex2.getServer(_level);
+            loginScreen(_id);
+            init();
+            client.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
 //    }
 
     /**
