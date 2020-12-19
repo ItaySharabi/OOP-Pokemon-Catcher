@@ -1,7 +1,6 @@
 package gameClient;
 
 import Server.Game_Server_Ex2;
-import api.game_service;
 import api.*;
 import com.google.gson.*;
 import gameClient.util.Point3D;
@@ -15,7 +14,6 @@ public class Ex2 implements Runnable {
     private static game_service _game;
     private static Arena _ar;
     private static MyFrame _win;
-    //    private static loginFrame _logFram;
     private static HashMap<Integer, HashMap<Integer, List<node_data>>> allRoutes;
     private static HashMap<Integer, HashMap<Integer, Double>> allRoutesDist;
     private static List<node_data> agentCurrentPath;
@@ -25,20 +23,20 @@ public class Ex2 implements Runnable {
     private static int _level;
     private static int _id;
 
-    public Ex2(int id, int level_number) {
-        _id = id;
-        _level = level_number;
+    public Ex2(String id, String level_number) {
+        _id = Integer.parseInt(id);
+        _level = Integer.parseInt(level_number);
     }
 
     public static void main(String[] args) {
 
         //TODO: Login screen.
 
-        for (int i = 13; i < 24; i++) {
+//        for (int i = _level; i < 24; _level++) {
             try {
                 if (client != null)
                     client.join();
-                client = new Thread(new Ex2(311436380, i));
+                client = new Thread(new Ex2(args[0], args[1]));
                 _game = Game_Server_Ex2.getServer(_level);
                 loginScreen(_id);
                 init();
@@ -47,7 +45,7 @@ public class Ex2 implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
+//    }
 
     /**
      * This method instantiates the game.
@@ -504,7 +502,7 @@ public class Ex2 implements Runnable {
     private static void loginScreen(int id) {
 
         if (_game.login(id)) {
-            System.out.println("Logged in11");
+            System.out.println("Logged in with: " + id);
         } else {
             System.out.println("Failed to log in");
         }
@@ -553,5 +551,4 @@ public class Ex2 implements Runnable {
         agent.set_SDT((long) agent.getSpeed());
         return agent.get_sg_dt();
     }
-
 }
