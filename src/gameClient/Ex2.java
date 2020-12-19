@@ -6,9 +6,6 @@ import api.*;
 import com.google.gson.*;
 import gameClient.util.Point3D;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class Ex2 implements Runnable {
@@ -18,7 +15,7 @@ public class Ex2 implements Runnable {
     private static game_service _game;
     private static Arena _ar;
     private static MyFrame _win;
-//    private static loginFrame _logFram;
+    //    private static loginFrame _logFram;
     private static HashMap<Integer, HashMap<Integer, List<node_data>>> allRoutes;
     private static HashMap<Integer, HashMap<Integer, Double>> allRoutesDist;
     private static List<node_data> agentCurrentPath;
@@ -26,35 +23,40 @@ public class Ex2 implements Runnable {
     private static directed_weighted_graph graph;
     private static Thread client;
     private static int _level;
-    private static long _id;
-    public Ex2(long id, int level_number/*,loginFrame loginFrame*/) {
-        _id=id;
-        _level=level_number;
-//        _logFram=loginFrame;
+    private static int _id;
+
+    public Ex2(int id, int level_number) {
+        _id = id;
+        _level = level_number;
     }
 
     public static void main(String[] args) {
 
-        //TODO: Add a countdown method to calc time/moves ratio. Should not go over (10 moves / 1 sec).
-        //TODO: Add a test method for the time/moves ratio.
         //TODO: Login screen.
 
-            _level=23;
+        for (int i = 13; i < 24; i++) {
             try {
                 if (client != null)
                     client.join();
+                client = new Thread(new Ex2(311436380, i));
                 _game = Game_Server_Ex2.getServer(_level);
+                loginScreen(_id);
                 init();
-//                loginScreen(12);
-                client = new Thread(new Ex2(12,2));
                 client.start();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
+    }
 
-
+    /**
+     * This method instantiates the game.
+     * It is done by initializing the Arena object '_ar', the game graph,
+     * and pokemons and agents lists, and determining the starting node
+     * for each agent to start the game on. This is calculated by
+     * summing all pokemons values on all edges on the graph, meaning they will
+     * start the game catching the pokemons that currently worth most.
+     */
     private static void init() {
 
         _ar = new Arena(); //Init a new Arena.
@@ -70,43 +72,46 @@ public class Ex2 implements Runnable {
         _ar.setGraph(graph);
         _ar.setPokemons(_pokemons); //Set the arena with the generated info.
 
-        initiallySetGameAgents(); //TODO: Done so far -- Only minor fixes.
+        initiallySetGameAgents(); // Decide the starting nodes for all game agents.
         _ar.setAgents(_agents);
 
-        _win = new MyFrame("test Ex2");
+        _win = new MyFrame("test Ex2"); //Initialize the game window
         _win.setSize(1000, 700);
         _win.update(_ar, _game);
         _win.show();
-        System.out.println("poke \n" + _pokemons);
-        System.out.println("agents \n" + _agents);
+
+        //Calculate all shortest paths on the graph from one node to another,
+        //and store that data in HashMaps 'allRoutes' and 'allRoutesDist'
+        //to save the total distance of each path.
         allRoutes = new HashMap<Integer, HashMap<Integer, List<node_data>>>();
         calcAllPaths(graphAlgo);
         allRoutesDist = new HashMap<Integer, HashMap<Integer, Double>>();
         calcAllPathsDist(graphAlgo);
     }
 
+    /**
+     * Main game thread logic:
+     * Start the game using the game server obj '_game'.startGame().
+     * While game is not out of time, just loop agent movement along
+     * the graph.
+     */
     @Override
     public synchronized void run() {
         _game.startGame();
         _win.setTitle("Time left: " + _game.timeToEnd() + " " + _game.toString());
-        long dt; // This is good for us
 
         while (_game.isRunning()) {
-//            synchronized (Ex2.class) {
+
             try {
-                moveAgents(_game, _ar.getGraph());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-//            }
-            try {
+                moveAgents();
                 _win.repaint();
                 client.sleep(sleepWell());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        System.out.println(graph);
         String res = _game.toString();
 
         System.out.println(res);
@@ -116,38 +121,8 @@ public class Ex2 implements Runnable {
     /**
      * Moves each of the agents along the edge,
      * in case the agent is on a node the next destination (next edge) is chosen (randomly).
-     *
-     * @param game
-     * @param graph
-     * @param
      */
-    private static synchronized void moveAgents(game_service game, directed_weighted_graph graph) throws InterruptedException {
-//        Runnable updateAnyTimeThread = new Runnable() {
-//
-//            @Override
-//            public synchronized void run() {
-//                try {
-//                    while (game.isRunning()) {
-//
-//                        String lg = game.move(); // Need to use at least 10 times in 1 sec according to boaz instruction
-//                        _win.setTitle("Ex2 - OOP: (NONE trivial Solution) " + _game.toString());
-//                        _agents = Arena.getAgents(lg, graph); //receive the last update for agents locations after game.move().
-//                        _ar.setAgents(_agents);
-//                        String fs = game.getPokemons();
-//                        _pokemons = Arena.json2Pokemons(fs);
-//
-//                        for (CL_Pokemon poke : _pokemons)
-//                            Arena.updateEdge(poke, graph);
-//                        _ar.setPokemons(_pokemons);
-//
-//                        Thread.sleep(20);//4
-//                    }
-//                }
-//                catch (Exception e) {e.getStackTrace();}
-//            }
-//        };
-//        Thread updateThread = new Thread(updateAnyTimeThread);
-//        updateThread.start();
+    private static synchronized void moveAgents() throws InterruptedException {
 
         moveAndUpdate();
         boolean isStuck = false;
@@ -157,7 +132,6 @@ public class Ex2 implements Runnable {
 
         for (int i = 0; i < _ar.getAgents().size(); i++) {
             ag = _ar.getAgents().get(i);
-//            System.out.println("Agent: " + ag.getID() + ", val: " + ag.getValue() + ", now going to: " + ag.getNextNode());
             if (getBestPokemon(ag)) {// Match given agent with the best pokemon on the ideal edge.
                 agentCurrentPath = getShortestPathTo(ag, ag.get_curr_fruit().get_edge().getSrc());
                 trackPokemonsOnList(agentCurrentPath); //TODO: Isn't setting isTracked
@@ -172,26 +146,40 @@ public class Ex2 implements Runnable {
                     dest = ag.get_curr_fruit().get_edge().getDest(); // Catch the pokemon
                 }
             } else { //If "stuck" -- has no pokemon to hunt.
-                dest = ag.getSrcNode();
+                dest = getMinimalNode(ag.getCurrNode());
             }
-            game.chooseNextEdge(id, dest);
+            _game.chooseNextEdge(id, dest);
         }
     }
 
+    /**
+     * This method is called inorder to call
+     * _game.move() method which moves all agents along the
+     * graph and runs more game logic.
+     * After this method is called an update is needed so all
+     * other game info objects needs to update as well.
+     */
     public static void moveAndUpdate() {
         String lg = _game.move(); // Need to use at least 10 times in 1 sec according to boaz instruction
         _win.setTitle("Time left: " + _game.timeToEnd() / 1000 + " " + _game.toString());
         _agents = Arena.getAgents(lg, graph); //receive the last update for agents locations after game.move().
-        _ar.setAgents(_agents);
-        String fs = _game.getPokemons();
-        _pokemons = Arena.json2Pokemons(fs);
+        _ar.setAgents(_agents); //Update agents list.
+        String fs = _game.getPokemons(); //Receive new pokemons json as String.
+        _pokemons = Arena.json2Pokemons(fs); //update pokemons list.
 
         for (CL_Pokemon poke : _pokemons)
-            Arena.updateEdge(poke, graph);
+            Arena.updateEdge(poke, graph); //Update graph edges to present all existing pokes.
 
-        _ar.setPokemons(_pokemons);
+        _ar.setPokemons(_pokemons);//Update the new pokemons list in the arena.
     }
 
+    /**
+     * This method is used to parse a json String into
+     * a graph object 'DW_GraphDS'.
+     *
+     * @param json - a json representing a directed, weighted graph.
+     * @return a directed_weighted_graph graph.
+     */
     public static directed_weighted_graph loadGraph(String json) {
         directed_weighted_graph newGraph = new DWGraph_DS();
         JsonObject graph = new JsonParser().parse(json).getAsJsonObject();
@@ -224,11 +212,23 @@ public class Ex2 implements Runnable {
         return newGraph;
     }
 
-
+    /**
+     * This method returns the list representing the path of nodes to travel
+     * from an agents current node to a destination 'pokeDest'.
+     *
+     * @param agent
+     * @param pokeDest
+     * @return a List<node_data>
+     */
     public static List<node_data> getShortestPathTo(CL_Agent agent, int pokeDest) {
         return allRoutes.get(agent.getSrcNode()).get(pokeDest);
     }
 
+    /**
+     * This method sets the game agents for the first time.
+     * Fill an array of size [agents.capacity()] with the best pokemons to start from
+     * and set each agent with a pokemon to start catching.
+     */
     public static void initiallySetGameAgents() {
 
         //Receive info from the game server for agent capacity.
@@ -250,7 +250,7 @@ public class Ex2 implements Runnable {
 
             occupiedNodes[i] = initialNode;
             _game.addAgent(initialNode);
-//            pokemon[i].setisTracked(true);
+            pokemon[i].setisTracked(true);
         }
         _agents = Arena.getAgents(_game.getAgents(), graphAlgo.getGraph());
         for (int i = 0; i < agentCapacity; i++) {
@@ -259,7 +259,11 @@ public class Ex2 implements Runnable {
     }
 
     /**
-     * @return
+     * This method finds the best initial node to set
+     * as a starting point for some agent.
+     *
+     * @param nodesNotToUse - an array of 'occupied' nodes, that other agent start from.
+     * @return the best node to start for an agent.
      */
     private static int bestInitialNode(int[] nodesNotToUse) {
         node_data occupied;
@@ -285,6 +289,13 @@ public class Ex2 implements Runnable {
         return graph.getNode(nodesNotToUse[0]).getKey();
     }
 
+    /**
+     * This method calcs the lowest edge by weight and returns its destination.
+     * node's key.
+     *
+     * @param from - the node to look from.
+     * @return the integer of the lowest destination node.
+     */
     private static int getMinimalNode(node_data from) {
         double min = Double.MAX_VALUE;
         int ans = 0;
@@ -300,6 +311,8 @@ public class Ex2 implements Runnable {
     /**
      * This method returns the pokemon with the max value that is not tracked by another
      * agent.
+     * Calculation is the sum of values for all pokemons on a certain edge,
+     * divided by the weight of the edge.
      *
      * @return the pokemon with the lowest ratio (Best decision).
      */
@@ -325,13 +338,23 @@ public class Ex2 implements Runnable {
         return poke;
     }
 
+    /**
+     * This method calculates and matches a given agent 'ag'
+     * with the best pokemon available to catch.
+     * This calculation is different from the initial matching calculation
+     * by taking in account the path weight to travel.
+     * If a match is made, mark the pokemon as 'Tracked'.
+     *
+     * @param ag - the agent to choose a pokemon for.
+     * @return true or false if the given agent has been matched with a pokemon or not.
+     */
     public synchronized static boolean getBestPokemon(CL_Agent ag) {
         double dist, minRatio = Double.MAX_VALUE; //minRatio gives the best Pokemon.
         double value, minpath;
         if (ag.get_curr_fruit() != null) return false; //TODO Tried something throws NULLPointer
         CL_Pokemon pokemon = null;
         List<node_data> path; //Execute a shortestPath Algo from src to dest.
-//        Thread.sleep(30);
+
         for (CL_Pokemon poke : _pokemons) {
             if (poke.getisTracked()) continue;
 
@@ -352,12 +375,16 @@ public class Ex2 implements Runnable {
         ag.set_curr_fruit(pokemon);
         if (ag.get_curr_fruit() == null) return false;
         pokemon.setisTracked(true);
-        System.out.println(pokemon);
-        System.out.println(ag.getID() + " will go to " + pokemon.get_edge().getSrc());
 
         return true;
     }
 
+    /**
+     * Calculates the distance of the path.
+     *
+     * @param path
+     * @return
+     */
     public static double pathDist(List<node_data> path) {
         double weight = 0;
         for (int i = 0; i < path.size() - 1; i++) {
@@ -369,14 +396,13 @@ public class Ex2 implements Runnable {
         return weight;
     }
 
-
     /**
      * This method sums all pokemon values that are associated with the given edge.
      *
      * @param edge
      * @return
      */
-    private synchronized static double sumEdgeValue(edge_data edge) {
+    private static double sumEdgeValue(edge_data edge) {
         double sum = 0;
         for (CL_Pokemon poke : _pokemons) {
             if (poke.get_edge().equals(edge)) sum += poke.getValue();
@@ -389,10 +415,10 @@ public class Ex2 implements Runnable {
      *
      * @param path
      */
-    public synchronized static void trackPokemonsOnList(List<node_data> path) {
+    public static void trackPokemonsOnList(List<node_data> path) {
 
         edge_data edge;
-//        System.out.println("Track pokemons on path: " + path);
+
         for (int i = 0; i < path.size() - 1; i++) {
             node_data node1 = path.get(i);
             node_data node2 = path.get(i + 1);
@@ -406,22 +432,13 @@ public class Ex2 implements Runnable {
      *
      * @param e
      */
-    public synchronized static void trackPokemonsOnEdge(edge_data e) {
-        int eSRC = e.getSrc(), eDEST = e.getDest();
-        int pokeSRC, pokeDEST;
+    public static void trackPokemonsOnEdge(edge_data e) {
         for (CL_Pokemon poke : _pokemons) {
             if (!poke.getisTracked()) {
-                pokeSRC = poke.get_edge().getSrc();
-                pokeDEST = poke.get_edge().getDest();
-                boolean edgesAreEqual = (eSRC == pokeSRC) && (eDEST == pokeDEST);
-//                System.out.println(eSRC + "-->" + eDEST + "|**|" + pokeSRC + "-->" + pokeDEST);
                 if (e.equals(poke.get_edge())) {
                     poke.setisTracked(true);
-//                    System.out.println("Being TRACKED! : " + poke);
                 }
             }
-
-//            System.out.println("Pokemon on " + poke.get_edge().getSrc() + poke.getisTracked());
         }
     }
 
@@ -487,7 +504,7 @@ public class Ex2 implements Runnable {
     private static void loginScreen(int id) {
 
         if (_game.login(id)) {
-            System.out.println("Logged in");
+            System.out.println("Logged in11");
         } else {
             System.out.println("Failed to log in");
         }
@@ -499,39 +516,42 @@ public class Ex2 implements Runnable {
      * If an agent is "close enough" to a pokemon, the
      * thread will sleep less --> about x ms 0<x<1.
      * Else the thread can sleep a bit more during the game.
+     *
+     * @return - The ideal time to sleep.
      */
     private static long sleepWell() {
-        long sleep = 90; //1
+        long sleep = 70; //1
         double distFromPoke = 0;
         int agentCurrNode = 0, pokeSrcNode = 0;
         CL_Pokemon pokemon;
-        int d;
+
         for (CL_Agent agent : _agents) {
-            d = allRoutes.get(agentCurrNode).get(agent.get_curr_fruit().get_edge().getSrc()).size();
-//            if (sleep > 0 && d > 3) { //If agent has more than 3 edges to move
-////                System.out.println("Agent " + agent.getID() + "Has to travel " + d);
-//                sleep += 5;
-//            } else sleep -= 10;
             pokemon = agent.get_curr_fruit();
             if (pokemon == null) continue;
             pokeSrcNode = pokemon.get_edge().getSrc();
             agentCurrNode = agent.getSrcNode();
+            distFromPoke = agent.get_pos().distance(agent.get_curr_fruit().getLocation());
             if (agentCurrNode == pokeSrcNode) {
-                distFromPoke = agent.get_pos().distance(agent.get_curr_fruit().getLocation());
-                //TODO: I have played with sleep time according to how far agents are from pokes.
-                if (distFromPoke < 0.001) { //If the agent is as close as 1 moving unit from poke.
-                    sleep = (int)0.3;
-                    return sleep;
-//                    System.out.println("Called when agent is close to pokemon on same edge.");
-//                    System.out.println("Sleep for: " + sleep);
-                } else {
-//                    System.out.println("Never called ***********************************8");
-//                    System.out.println(distFromPoke);
-                }
+                if (distFromPoke < 0.1)
+                    return calcSDT(agent);
+            } else if (sleep <= 90) {
+                sleep += 40;
             }
         }
         return sleep;
 
+    }
+
+    /**
+     * Main method to calc ideal sleep time.
+     * This method was given by the course staff.
+     *
+     * @param agent
+     * @return
+     */
+    public static long calcSDT(CL_Agent agent) {
+        agent.set_SDT((long) agent.getSpeed());
+        return agent.get_sg_dt();
     }
 
 }
