@@ -32,7 +32,7 @@ public class Ex2 implements Runnable {
     private static directed_weighted_graph graph;
     private static Thread client;
     private static int _level;
-    private static int _id;
+    private static long _id;
 
     /**
      * Start constructor
@@ -60,6 +60,9 @@ public class Ex2 implements Runnable {
             args0 = args[0];
             args1 = args[1];
         }
+        /*Manual Run:
+          args0 = (your id)
+          args1 = (choose level) */
             try {
                 if (client != null)
                     client.join();
@@ -166,7 +169,7 @@ public class Ex2 implements Runnable {
             ag = _ar.getAgents().get(i);
             if (getBestPokemon(ag)) {// Match given agent with the best pokemon on the ideal edge.
                 agentCurrentPath = getShortestPathTo(ag, ag.get_curr_fruit().get_edge().getSrc());
-                trackPokemonsOnList(agentCurrentPath); //TODO: Isn't setting isTracked
+                trackPokemonsOnList(agentCurrentPath); //Set all pokemons on path as tracked.
             } else //agent has nowhere to go and needs to go the lowest amount of moves.
                 isStuck = true;
 
@@ -538,7 +541,7 @@ public class Ex2 implements Runnable {
      * This method check if login to the server was successful.
      * @param id
      */
-    private static void loginScreen(int id) {
+    private static void loginScreen(long id) {
 
         if (_game.login(id)) {
             System.out.println("Logged in with: " + id);
