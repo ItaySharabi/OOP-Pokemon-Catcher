@@ -2,7 +2,7 @@
 
 <center>
 
-![alt text](https://media.giphy.com/media/vsyKKf1t22nmw/giphy.gif)
+![alt text](data\images\backgroundsecound.png)
 
 </center>
 
@@ -89,6 +89,7 @@ This is done by simply accessing the last element of the given list and calling 
 >`public List<node_info> shortestPath(int src, int dest)` 
 * Traverse the current class graph Breadth-First inorder to find the shortest path from node 'src' to node 'dest'.
 This is done using a `Priority-Queue` data structure that prioritizes nodes by the lowest current path by weight.
+This method was implemented with inspiration from Dijkstra's algorithm.
 <center> 
 <h3> Illustration of Dijkstra </h3>
 
