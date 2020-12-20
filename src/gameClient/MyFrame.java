@@ -6,7 +6,6 @@ import api.geo_location;
 import api.node_data;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import gameClient.util.Point3D;
 import gameClient.util.Range;
 import gameClient.util.Range2D;
 import api.game_service;
@@ -17,9 +16,7 @@ import java.util.List;
 
 /**
  * This class represents a very simple GUI class to present a
- * game on a graph - you are welcome to use this class - yet keep in mind
- * that the code is not well written in order to force you improve the
- * code and not to take it "as is".
+ * game on a graph.
  */
 public class MyFrame extends JFrame {
     private int _ind;
@@ -39,6 +36,11 @@ public class MyFrame extends JFrame {
         this._ar = ar;
         updateFrame();
     }
+
+    /**
+     * this method was added by us to customize the panel.
+     * @param g -graphic.
+     */
     private void drawPanel(Graphics g) {
         int x = 800, y = 60;
         Graphics2D g2 = (Graphics2D) g;
@@ -76,7 +78,7 @@ public class MyFrame extends JFrame {
         int r = 300;
         Graphics2D g2 = (Graphics2D) g;
         Toolkit tk = Toolkit.getDefaultToolkit();
-        Image backGround = tk.getImage("backgroundsecound.png");
+        Image backGround = tk.getImage("data\\images\\backgroundsecound.png");
         g2.drawImage(backGround, 0,0, 1550, 840, this);
     }
 
@@ -93,7 +95,7 @@ public class MyFrame extends JFrame {
      * This method add to make the frame running clean.
      * Token from: https://www.youtube.com/watch?v=4T3WJEH7zrc&feature=youtu.be
      *
-     * @param g
+     * @param g-graphic.
      */
     public void paint(Graphics g) {
         dbImage = createImage(getWidth(), getHeight());
@@ -141,21 +143,21 @@ public class MyFrame extends JFrame {
     }
 
     private void drawPokemons(Graphics g) {
-        List<CL_Pokemon> fs = _ar.getPokemons();
+        List<Pokemon> fs = _ar.getPokemons();
         if (fs != null) {
-            Iterator<CL_Pokemon> itr = fs.iterator();
+            Iterator<Pokemon> itr = fs.iterator();
 
             while (itr.hasNext()) {
 
-                CL_Pokemon f = itr.next();
+                Pokemon f = itr.next();
                 geo_location c = f.getLocation();
                 int r = 30;
                 Graphics2D g2 = (Graphics2D) g;
                 Toolkit tk = Toolkit.getDefaultToolkit();
-                Image lowValue = tk.getImage("lowValue.png");
-                Image mediumValue = tk.getImage("mediumValue.png");
-                Image picatchu = tk.getImage("picatchu.png");
-                Image highValue = tk.getImage("highvalue.png");
+                Image lowValue = tk.getImage( "data\\images\\lowValue.png");
+                Image mediumValue = tk.getImage("data\\images\\mediumValue.png");
+                Image picatchu = tk.getImage("data\\images\\picatchu.png");
+                Image highValue = tk.getImage("data\\images\\highvalue.png");
                 Image img = lowValue;
                 if (f.getValue() <= 5)
                     img = lowValue;
@@ -177,7 +179,7 @@ public class MyFrame extends JFrame {
     }
 
     private void drawAgents(Graphics g) {
-        List<CL_Agent> rs = _ar.getAgents();
+        List<Agent> rs = _ar.getAgents();
         //	Iterator<OOP_Point3D> itr = rs.iterator();
         g.setColor(Color.red);
         int i = 0;
@@ -186,7 +188,7 @@ public class MyFrame extends JFrame {
             int r = 20;
             Graphics2D g2 = (Graphics2D) g;
             Toolkit tk = Toolkit.getDefaultToolkit();
-            Image agent = tk.getImage("agent.png");
+            Image agent = tk.getImage("data\\images\\agent.png");
             i++;
             if (c != null) {
 
@@ -210,6 +212,7 @@ public class MyFrame extends JFrame {
         geo_location s0 = this._w2f.world2frame(s);
         geo_location d0 = this._w2f.world2frame(d);
         g.setColor(Color.BLACK);
+        g.drawString("" + (int) e.getWeight(), (int) (s0.x()+d0.x())/2, (int) (s0.y()+d0.y())/2);
         g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
     }
 }

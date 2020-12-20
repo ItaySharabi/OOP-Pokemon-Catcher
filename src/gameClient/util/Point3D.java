@@ -7,6 +7,12 @@ import api.geo_location;
 
 import java.io.Serializable;
 
+/**
+ * This class implements the geo_location interface -
+ * to represent a Vector(x, y, z) (a coordinate).
+ * This class is used to calculated distances and so on between 2
+ * geo_locations.
+ */
 public class Point3D implements geo_location, Serializable{
     private static final long serialVersionUID = 1L;
     /**
