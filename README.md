@@ -6,7 +6,7 @@
 
 </center>
 
->##**********************************_Introduction_**********************************
+##**********************************_Introduction_**********************************
 
 **@authers Tal Schreiber & Itay Sharabi**
 
@@ -48,47 +48,47 @@ nodes: This HashMap represents the nodes on the graph by key and value(node_data
 outEdges: This HashMap represents the outgoing edges from each node (by key) to all of it's neighbors.
 inEdges: This HashMap represents the incoming edges from each node (by key) to all of it's neighbors. 
 
->public DWGraph_DS(directed_weighted_graph g)
+>`public DWGraph_DS(directed_weighted_graph g)`
 * Was made for making a deep copied graph.
 Main reason for this constructor is for the copy() method of DWGraph_Algo class.
 Using deep copy constructor of node_data and edge_data classes.
 
->public void connect(int src, int dest, double w) 
+>`public void connect(int src, int dest, double w)` 
 * First need to ask if those nodes exist on this graph, no--> do nothing.
 Second, need to ask if the edge's weight is greater than or equal to 0 (due to the requirement of the interface), no--> do nothing.
 Next need to ask if those two nodes are same nodes, yes --> break this function , else continue connecting those node.
 Next we'll connect those nodes on both hashmaps(in/outEdges).
 Note: If this node is already connected their weight will be updated according to the last connection
 
->public node_info removeNode(int key)
+>`public node_data removeNode(int key)`
 * First we need to ask if our graph contains this key node, no--> return null.
 Second, we delete all outGoing edges from the key node, and then all incoming edges into key node with an iterator.
 We delete the node from the nodes hashmap and return the deleted node.
 
->public void removeEdge(int src, int dest)
+>`public void removeEdge(int src, int dest)`
 * First we check if there is an edge between src and dest, and src != dest. 
 If so --> remove from both incoming and outgoing edge maps.
 Otherwise --> return null.
 
 *********_DWGraph_Algo class methods:_*********
 
->public graph **copy()** 
+>`public directed_weighted_graph copy()` 
 * This method is using a deep copy constructor that was made in the DWGraph_DS class and return a deep copy of the graph.
 
->public boolean **isConnected()**
+>`public boolean isConnected()`
 * This method returns true iff there's a valid path from any node to every other.
 We do this by traversing the graph Breadt-First twice: 
 First time: Regular BFS traverse on the graph from vertex V
 Second time: Transpose all graph's edges and execute the same bfs from same vertex V.
 
->public int **shortestPathDist(int src, int dest)** 
-* Execute the *shortestPath(src, dest)* method to recieve that relevant path from src to dest.
+>`public int shortestPathDist(int src, int dest)` 
+* Execute the *shortestPath(src, dest)* method to receive that relevant path from src to dest.
 Extract and return the required value which is the current weight of the 'dest' node.
 This is done by simply accessing the last element of the given list and calling element.getWeight().
 * 
->public List<node_info> **shortestPath(int src, int dest)** // supposed to return a list of shortest weight path if exist, null if none.
+>`public List<node_info> shortestPath(int src, int dest)` 
 * Traverse the current class graph Breadth-First inorder to find the shortest path from node 'src' to node 'dest'.
-This is done using a Priority-Queue data structure that prioritizes nodes by the lowest current path by weight.
+This is done using a `Priority-Queue` data structure that prioritizes nodes by the lowest current path by weight.
 <center> 
 <h3> Illustration of Dijkstra </h3>
 
