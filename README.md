@@ -2,7 +2,7 @@
 
 <center>
 
-![alt text](data\images\backgroundsecound.png)
+![alt text](https://i.ibb.co/XyV51Jg/backgroundsecound.jpg)
 
 </center>
 
