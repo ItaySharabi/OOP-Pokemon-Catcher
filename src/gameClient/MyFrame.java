@@ -154,10 +154,10 @@ public class MyFrame extends JFrame {
                 int r = 30;
                 Graphics2D g2 = (Graphics2D) g;
                 Toolkit tk = Toolkit.getDefaultToolkit();
-                Image lowValue = tk.getImage( "data\\images\\lowValue.png");
-                Image mediumValue = tk.getImage("data\\images\\mediumValue.png");
-                Image picatchu = tk.getImage("data\\images\\picatchu.png");
-                Image highValue = tk.getImage("data\\images\\highvalue.png");
+                Image lowValue = tk.getImage( "data\\images\\lowValue.jpg");
+                Image mediumValue = tk.getImage("data\\images\\mediumValue.jpg");
+                Image picatchu = tk.getImage("data\\images\\picatchu.jpg");
+                Image highValue = tk.getImage("data\\images\\highvalue.jpg");
                 Image img = lowValue;
                 if (f.getValue() <= 5)
                     img = lowValue;
@@ -188,7 +188,7 @@ public class MyFrame extends JFrame {
             int r = 20;
             Graphics2D g2 = (Graphics2D) g;
             Toolkit tk = Toolkit.getDefaultToolkit();
-            Image agent = tk.getImage("data\\images\\agent.png");
+            Image agent = tk.getImage("data\\images\\agent.jpg");
             i++;
             if (c != null) {
 
