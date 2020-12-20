@@ -1,4 +1,4 @@
-#I.T Pokemon's Game.
+# I.T Pokemon's Game.
 
 <center>
 
@@ -10,7 +10,7 @@
 
 **@authers Tal Schreiber & Itay Sharabi**
 
-#####***Package: src/api***
+##### ***Package: src/api***
 * NodeData class:
 This class represents the node and all its characteristics.
 implements node_data
@@ -125,10 +125,10 @@ not by types.
 ![alt text](https://i.ibb.co/9c6D7Lb/highvalue.jpg)
 * value range: 15 and above.
 
-#How To Run
+# How To Run
 * Download project zip file from **https://github.com/ItaySharabi/OOP_Ex2.git** 
 
-###Manually:
+### Manually:
 
 * Start IntelliJ, or any other Java workspace environment, and open Ex2.java class.
 
@@ -137,7 +137,7 @@ not by types.
 * Simply Change the input of the fields 'id' and 'level' as you wish.
 * Hit RUN (Green 'Play' button), and the game should be running! 
 
-###Through Terminal (Command Prompt)
+### Through Terminal (Command Prompt)
 
 * Navigate throughout your computer to look for the extracted folder, using the `cd` and `dir` commands.
 * Find OOP_Ex2.jar file (`dir` command shows directory content).
