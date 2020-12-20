@@ -6,7 +6,7 @@
 
 </center>
 
-##**********************************_Introduction_**********************************
+## **********************************_Introduction_**********************************
 
 **@authers Tal Schreiber & Itay Sharabi**
 
@@ -27,7 +27,7 @@ implements directed_weighted_graph
 This class represents all the algorithms we want to execute in this graph
 implements dw_graph_algorithms
 
-#####***Package: src/gameClient***
+#### ***Package: src/gameClient***
 * Agent class: 
 This class represents an agent. 
 Some information about agents is stored as well as some logic to run throuout the game.
