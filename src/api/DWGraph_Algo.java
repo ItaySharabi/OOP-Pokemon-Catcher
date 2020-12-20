@@ -6,14 +6,30 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * This class represents a set of graph theory algorithms to
+ * apply on a directed, weighted graph data structure, including:
+ * Saving and loading a graph, calculating shortest paths on the graph from
+ * one node to another, checking if the graph is strongly connected, and so on...
+ *
+ *
+ *
+ */
 public class DWGraph_Algo implements dw_graph_algorithms {
 
     private directed_weighted_graph graph;
 
+    /**
+     * Empty constructor.
+     */
     public DWGraph_Algo() {
         graph = new DWGraph_DS();
     }
 
+    /**
+     * A constructor that initiates this.graph with given graph 'g'.
+     * @param g - the graph to init this class with.
+     */
     public DWGraph_Algo(directed_weighted_graph g) {
         init(g);
     }
@@ -21,7 +37,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * Init the graph on which this set of algorithms operates on.
      *
-     * @param g
+     * @param g - the graph to init this class with.
      */
     @Override
     public void init(directed_weighted_graph g) {
@@ -32,7 +48,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * Return the underlying graph of which this class works.
      *
-     * @return
+     * @return - the current graph.
      */
     @Override
     public directed_weighted_graph getGraph() {
@@ -41,8 +57,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     /**
      * Compute a deep copy of this weighted graph.
-     *
-     * @return
+     * This is done by using all other copy constructors of a DWGraph_DS Object.
+     * @return - a deep copy of this.graph.
      */
     @Override
     public directed_weighted_graph copy() {
@@ -52,8 +68,10 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * Returns true if and only if (iff) there is a valid path from each node to each
      * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
-     *
-     * @return
+     * This method is implemented using the Kosaraju's algorithm and a regular BFS algorithm.
+     * More on the implementation is over the relevant methods.
+     * @Runtime: Regular BFS + Kosaraju's algorithm(also uses bfs) = O(2*(|V|+|E|)) = O(|V|+|E|)
+     * @return - true iff there's a valid path from every node to each other.
      */
     @Override
     public boolean isConnected() {
@@ -66,10 +84,13 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * returns the length of the shortest path between src to dest
      * Note: if no such path --> returns -1
-     *
+     * This method uses the shortestPath() method and receives the path returned.
+     * The value returned is the last elements weight, which is the distance from
+     * src to dest.
+     * @Runtime: Regular BFS using a priority queue = O(|V|+|E|)
      * @param src  - start node
      * @param dest - end (target) node
-     * @return
+     * @return - the distance between src and dest on the current graph.
      */
     @Override
     public double shortestPathDist(int src, int dest) {
@@ -86,12 +107,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * returns the the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
-     * see: https://en.wikipedia.org/wiki/Shortest_path_problem
+     * Logic only was taken from: https://en.wikipedia.org/wiki/Shortest_path_problem
      * Note if no such path --> returns null;
-     *
+     * @Runtime: Regular BFS using a priority queue = O(|V|+|E|).
      * @param src  - start node
      * @param dest - end (target) node
-     * @return
+     * @return - the path between src and dest if there is one.
      */
     @Override
     public List<node_data> shortestPath(int src, int dest) {
@@ -118,7 +139,6 @@ public class DWGraph_Algo implements dw_graph_algorithms {
         while (!pq.isEmpty()) {
 
             curr = pq.poll();
-//            System.out.println("Popped from queue: " + curr.getKey() + ", with weight: " + curr.getWeight());
 
             for (edge_data outEdge : graph.getE(curr.getKey())) {
                 neighbor = graph.getNode(outEdge.getDest());
@@ -143,11 +163,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     }
 
     /**
-     * Saves this weighted (directed) graph to the given
-     * file name - in JSON format
+     * Saves this weighted (directed) graph to the given.
+     * file name - in JSON format.
      *
      * @param file - the file name (may include a relative path).
-     * @return true - iff the file was successfully saved
+     * @return true - iff the file was successfully saved.
      */
     @Override
     public boolean save(String file) {
@@ -191,15 +211,15 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     }
 
     /**
-     * This method load a graph to this graph algorithm.
-     * if the file was successfully loaded - the underlying graph
+     * This method load a graph to this graph algorithm's class.
+     * If the file was successfully loaded - the underlying graph
      * of this class will be changed (to the loaded one), in case the
      * graph was not loaded the original graph should remain "as is".
      *
-     * @param file - file name of JSON file
+     * @param file - file name of JSON file.
      * @return true - iff the graph was successfully loaded.
      */
-    @Override // NEED TO CHECK , was created by watching Simon Pikalov video guide.
+    @Override
     public boolean load(String file) {
 
         directed_weighted_graph newGraph = new DWGraph_DS(); //The graph to load onto.
@@ -257,7 +277,7 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * This method transposes the given graph g.
      * The new graph will have the same set of vertices V = {v1, v2, .. , v(n)},
-     * And all transposed edges. E = {(v1,v2), (v2,v6), .. }, E(trnasposed) = {(v2,v1), (v6,v2), ..}.
+     * And all transposed edges. E = {(v1,v2), (v2,v6), .. }, E(transposed) = {(v2,v1), (v6,v2), ..}.
      * @param g - the given graph.
      * @return a transposed directed_weighted_graph.
      */
@@ -277,7 +297,8 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
     /**
      * This method checks if all nodes on the graph have been visited.
-     * If one node was not visited then returns false - meaning one node was not reached through another node.
+     * If one node was not visited then returns false - meaning one node was
+     * not reached through another node.
      *
      * @param graph - this graph.
      * @return true iff all nodes on the graph were visited.
@@ -301,9 +322,9 @@ public class DWGraph_Algo implements dw_graph_algorithms {
      * This methods rebuilds the path from node src to node dest.
      * This map 'prevNode' holds the information to build the path,
      * of which node was called from which node.
-     * @param src - the beginning of the list
-     * @param dest - the end of the list
-     * @param prevNode - info
+     * @param src - the beginning of the list.
+     * @param dest - the end of the list.
+     * @param prevNode - info.
      * @return a list containing all nodes on the shortest path from src to dest.
      */
     private List<node_data> rebuildPath(int src, int dest, HashMap<Integer, node_data> prevNode) {
@@ -328,11 +349,12 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * This method uses the private methods transpose() and isConnectedBFS()
      * to transpose the this.graph and re-execute isConnectedBFS() on the same graph.
-     * @param start
-     * @return
+     * @Runtime: Graph transposition + regular BFS = O(2*(|V|+|E|)) = O(|V|+|E|)
+     * @param start - BFS the the transposed graph for node start.
+     * @return - true iff all nodes have been visited after one graph traverse.
      */
     private boolean Kosaraju(node_data start) {
-        boolean isConnected = false;
+        boolean isConnected;
         directed_weighted_graph transposed = transpose(graph);
 
         directed_weighted_graph temp = getGraph();
@@ -345,13 +367,14 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     /**
      * Explore the graph Breadth-First and mark all nodes passed by as visited.
      * if all nodes of the graph were visited in 1 executions, this method returns true.
+     * @Runtime: Regular graph traversal - O(|V|+|E|).
      * @param start - the node to start traversing from.
      * @return true or false, if all nodes could be reached from start node.
      */
     private boolean isConnectedBFS(node_data start) {
         resetTags();// Was added to make sure all node's tags are reset.
         node_data curr = start;
-        node_data neighbor = null;
+        node_data neighbor;
         Queue<node_data> queue = new LinkedList<>();
         queue.add(curr);
         curr.setTag(1);

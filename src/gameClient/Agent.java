@@ -7,24 +7,28 @@ import api.node_data;
 import gameClient.util.Point3D;
 import org.json.JSONObject;
 
-public class CL_Agent {
-    public static final double EPS = 0.0001;
-    private static int _count = 0;
-    private static int _seed = 3331;
+/**
+ * This class contains all of the game agent's characteristics like
+ * speed, position, current pokemon tracked, and so on..
+ */
+public class Agent {
     private int _id;
-    //	private long _key;
     private geo_location _pos;
     private double _speed;
     private edge_data _curr_edge;
     private node_data _curr_node;
     private directed_weighted_graph _gg;
-    private CL_Pokemon _curr_fruit;
+    private Pokemon _curr_fruit;
     private long _sg_dt;
 
     private double _value;
 
-
-    public CL_Agent(directed_weighted_graph g, int start_node) {
+    /**
+     * Constructor
+     * @param g - game graph.
+     * @param start_node - agent starting node.
+     */
+    public Agent(directed_weighted_graph g, int start_node) {
         _gg = g;
         setMoney(0);
         this._curr_node = _gg.getNode(start_node);
@@ -32,6 +36,12 @@ public class CL_Agent {
         _id = -1;
         setSpeed(0);
     }
+
+    /**
+     * This updates the agent by a given json object
+     * that represents an agent.
+     * @param json - Agent json.
+     */
     public void update(String json) {
         JSONObject line;
         try {
@@ -58,7 +68,6 @@ public class CL_Agent {
             e.printStackTrace();
         }
     }
-    //@Override
     public int getSrcNode() {return this._curr_node.getKey();}
     public String toJSON() {
         int d = this.getNextNode();
@@ -85,6 +94,7 @@ public class CL_Agent {
         else {_curr_edge = null;}
         return ans;
     }
+
     public void setCurrNode(int src) {
         this._curr_node = _gg.getNode(src);
     }
@@ -102,18 +112,15 @@ public class CL_Agent {
         return ans;
     }
     public int getID() {
-        // TODO Auto-generated method stub
         return this._id;
     }
 
     public geo_location getLocation() {
-        // TODO Auto-generated method stub
         return _pos;
     }
 
 
     public double getValue() {
-        // TODO Auto-generated method stub
         return this._value;
     }
 
@@ -140,17 +147,22 @@ public class CL_Agent {
     public void setSpeed(double v) {
         this._speed = v;
     }
-    public CL_Pokemon get_curr_fruit() {
+    public Pokemon get_curr_fruit() {
         return _curr_fruit;
     }
-    public void set_curr_fruit(CL_Pokemon curr_fruit) {
+
+    /**
+     * This sets this.agent with a pokemon to hunt.
+     * @param curr_fruit - The pokemon to hunt.
+     */
+    public void set_curr_fruit(Pokemon curr_fruit) {
         this._curr_fruit = curr_fruit;
     }
 
     /**
-     * TODO:
-     * This is an important method we will need to use this!!!
-     * @param ddtt
+     * This method calculates the agent's distance in terms of geo_location
+     * and returns the ideal sleep time inorder to save calls to gameServer.move().
+     * @param ddtt - the required sleep time.
      */
     public void set_SDT(long ddtt) {
         long ddt = ddtt;

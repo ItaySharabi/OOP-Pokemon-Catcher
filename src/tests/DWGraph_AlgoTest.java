@@ -4,6 +4,8 @@ import api.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DWGraph_AlgoTest {
@@ -11,8 +13,8 @@ class DWGraph_AlgoTest {
     static directed_weighted_graph g;
     static dw_graph_algorithms ga;
     static int V = 0, //Vertices
-               E = 0, //Edges
-               randomWeightSeed = 0;
+            E = 0, //Edges
+            randomWeightSeed = 0;
 
     @BeforeAll
     static void init() {
@@ -148,6 +150,8 @@ class DWGraph_AlgoTest {
 
     @Test
     void shortestPathTest() {
+        V = 7;
+        E = 7*6;
         g = makeGraph(V, E);
         ga.init(g);
 
@@ -158,19 +162,26 @@ class DWGraph_AlgoTest {
         ga.getGraph().connect(4, 0 ,1);
 
         double dist = ga.shortestPathDist(0, 4);
-        System.out.println(g);
-        System.out.println(dist);
+        assertNotEquals(4, dist); //There exists a shorter path
 
-        ga.init(makeGraph(V*2, 0));
+        ga.init(makeGraph(V, 0));
         makeFullGraph(ga.getGraph(), 1);
-        dist = ga.shortestPathDist(0, 9);
-        System.out.println(dist);
+
+        /*
+        Make sure the returned list from getShortestPath() contains the current updated weights,
+        as received when calling shortestPathDist().
+         */
+        ga.init(makeGraph(7, 7*6));
+        dist = ga.shortestPathDist(0, 6);
+        List<node_data> path = ga.shortestPath(0, 6);
+        assertEquals(path.get(path.size()-1).getWeight(), dist);
+
     }
 
     @Test
     void saveLoad() {
 
-        String path = "src\\data\\"; //Path to example graphs.
+        String path = "data\\"; //Path to example graphs.
         final String file = "A"; //File name (The graph to test).
 
         for (int i = 0; i < 6; i++)

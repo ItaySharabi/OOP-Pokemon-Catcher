@@ -5,6 +5,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 
+/**
+ * This class represents a directed, weighted graph data structure.
+ * Graph data is stored in HashMaps inorder to achieve O(1) access to nodes and edges.
+ * The graph supports some methodology like adding/removing nodes/edges from the graph,
+ * connecting nodes on the graph and holding counts of edge size and node size.
+ */
 public class DWGraph_DS implements directed_weighted_graph {
 
     private int edgeSize;
@@ -16,7 +22,10 @@ public class DWGraph_DS implements directed_weighted_graph {
      * If node 3 has an edge TO node 5, then obtain it by: edge_data e = outEdges.get(3).get(5)
      * If node 5 has an edge FROM node 3, the obtain it by: edge_data e = inEdges.get(5).get(3) */
 
-    public DWGraph_DS() { //Empty constructor
+    /**
+     * Empty constructor.
+     */
+    public DWGraph_DS() {
         edgeSize = 0;
         countMC = 0;
         nodes = new HashMap<Integer, node_data>();
@@ -24,7 +33,11 @@ public class DWGraph_DS implements directed_weighted_graph {
         inEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
     }
 
-    public DWGraph_DS(directed_weighted_graph g) { //Deep copy constructor
+    /**
+     * Deep copy constructor.
+     * @param g
+     */
+    public DWGraph_DS(directed_weighted_graph g) {
         if (g != null) {
             nodes = new HashMap<Integer, node_data>();
             outEdges = new HashMap<Integer, HashMap<Integer, edge_data>>();
@@ -66,9 +79,9 @@ public class DWGraph_DS implements directed_weighted_graph {
      * returns the data of the edge (src,dest), null if none.
      * Note: this method should run in O(1) time.
      *
-     * @param src
-     * @param dest
-     * @return
+     * @param src - source node
+     * @param dest - destination node
+     * @return - the edge connecting both nodes, if there exists one.
      */
     @Override
     public edge_data getEdge(int src, int dest) {
@@ -80,7 +93,7 @@ public class DWGraph_DS implements directed_weighted_graph {
      * adds a new node to the graph with the given node_data.
      * Note: this method should run in O(1) time.
      *
-     * @param n
+     * @param n - node
      */
     @Override
     public void addNode(node_data n) {
@@ -129,16 +142,24 @@ public class DWGraph_DS implements directed_weighted_graph {
      * This method returns a pointer (shallow copy) for the
      * collection representing all the edges getting out of
      * the given node (all the edges starting (source) at the given node).
-     * Note: this method should run in O(k) time, k being the collection size.
+     * @Runtime: this method runs in O(k) time, k being the collection size.
      *
-     * @param node_id
+     * @param node_id - node key
      * @return Collection<edge_data>
      */
     @Override
     public Collection<edge_data> getE(int node_id) {
         return outEdges.get(node_id).values(); //This is the outgoing edge_data collection for 'node_id'.
     }
-
+    /**
+     * This method returns a pointer (shallow copy) for the
+     * collection representing all the edges getting into
+     * the given node.
+     * @Runtime: this method runs in O(k) time, k being the collection size.
+     *
+     * @param node_id - node key
+     * @return Collection<edge_data>
+     */
     public Collection<edge_data> getInE(int node_id) {
         return inEdges.get(node_id).values(); //This is the outgoing edge_data collection for 'node_id'.
     }
@@ -146,9 +167,9 @@ public class DWGraph_DS implements directed_weighted_graph {
     /**
      * Deletes the node (with the given ID) from the graph -
      * and removes all edges which starts or ends at this node.
-     * This method should run in O(k), V.degree=k, as all the edges should be removed.
+     * @Runtime: This method runs in O(k), V.degree=k, as all the edges should be removed.
      *
-     * @param key
+     * @param key - the node to delete.
      * @return the data of the removed node (null if none).
      */
     @Override
@@ -173,10 +194,10 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     /**
      * Deletes the edge from the graph,
-     * Note: this method should run in O(1) time.
+     * @Runtime: this method runs in O(1) time.
      *
-     * @param src
-     * @param dest
+     * @param src - source node.
+     * @param dest - dest node.
      * @return the data of the removed edge (null if none).
      */
     @Override
@@ -191,9 +212,9 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     /**
      * Returns the number of vertices (nodes) in the graph.
-     * Note: this method should run in O(1) time.
+     * @Runtime: this method runs in O(1) time.
      *
-     * @return
+     * @return - graph node size.
      */
     @Override
     public int nodeSize() {
@@ -202,9 +223,9 @@ public class DWGraph_DS implements directed_weighted_graph {
 
     /**
      * Returns the number of edges (assume directional graph).
-     * Note: this method should run in O(1) time.
+     * @Runtime: this method runs in O(1) time.
      *
-     * @return
+     * @return - graph edge size.
      */
     @Override
     public int edgeSize() {
@@ -214,7 +235,7 @@ public class DWGraph_DS implements directed_weighted_graph {
     /**
      * Returns the Mode Count - for testing changes in the graph.
      *
-     * @return
+     * @return - the meta changes made on this graph.
      */
     @Override
     public int getMC() {
@@ -239,6 +260,12 @@ public class DWGraph_DS implements directed_weighted_graph {
         return str + " ";
     }
 
+    /**
+     * Override equals() method to compare graphs
+     * by: node size, edge size, and outgoing edges.
+     * @param o - graph to compare to.
+     * @return - true or false if graphs are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

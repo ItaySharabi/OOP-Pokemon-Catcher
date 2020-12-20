@@ -4,23 +4,22 @@ import gameClient.util.Point3D;
 
 import java.util.Objects;
 
+/**
+ * This class represents a node on a graph.
+ * A node has a unique key, a tag,
+ * data (String) and location.
+ */
 public class NodeData implements node_data {
 
     private int key, tag;
     private double weight;
     private String info;
     private geo_location location;
-    private static int keyGenerator = 0;
 
-    public NodeData()
-    {
-        key = keyGenerator++;
-        weight = 0;
-        tag = 0;
-        info = " ";
-        location = new Point3D(0, 0, 0);
-    }
-
+    /**
+     * Constructor to build a new node by key.
+     * @param key
+     */
     public NodeData(int key){
         this.key=key;
         weight=0;
@@ -28,6 +27,11 @@ public class NodeData implements node_data {
         info="";
         location = new Point3D(0, 0, 0);
     }
+
+    /**
+     * Copy constructor to build a new node for another node.
+     * @param n
+     */
     public NodeData(node_data n)
     {
         key = n.getKey();
@@ -40,7 +44,7 @@ public class NodeData implements node_data {
     /**
      * Returns the key (id) associated with this node.
      *
-     * @return
+     * @return - node's key.
      */
     @Override
     public int getKey() {
@@ -51,7 +55,7 @@ public class NodeData implements node_data {
      * Returns the location of this node, if
      * none return null.
      *
-     * @return
+     * @return - the current node location.
      */
     @Override
     public geo_location getLocation() {
@@ -71,7 +75,7 @@ public class NodeData implements node_data {
     /**
      * Returns the weight associated with this node.
      *
-     * @return
+     * @return the weight from this node to another node on the graph.
      */
     @Override
     public double getWeight() {
@@ -91,7 +95,7 @@ public class NodeData implements node_data {
     /**
      * Returns the remark (meta data) associated with this node.
      *
-     * @return
+     * @return the information associated with this node.
      */
     @Override
     public String getInfo() {
@@ -101,7 +105,7 @@ public class NodeData implements node_data {
     /**
      * Allows changing the remark (meta data) associated with this node.
      *
-     * @param s
+     * @param s - The new information to set.
      */
     @Override
     public void setInfo(String s) {
@@ -112,7 +116,7 @@ public class NodeData implements node_data {
      * Temporal data (aka color: e,g, white, gray, black)
      * which can be used be algorithms
      *
-     * @return
+     * @return - the current tag of this node.
      */
     @Override
     public int getTag() {
@@ -130,11 +134,17 @@ public class NodeData implements node_data {
         tag = t;
     }
 
+
     @Override
     public String toString() {
         return key+""+"["+weight+"]";
     }
 
+    /**
+     * Overriding equals method to compare nodes by keys and info only.
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

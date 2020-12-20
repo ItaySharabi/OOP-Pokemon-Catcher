@@ -7,10 +7,21 @@ import gameClient.util.Point3D;
 
 import java.util.*;
 
+/**
+ * This class represents a game window of the game we have created: "I.T Pokemon's game".
+ * All game logic is being run within this class and some from external classes: Agent/Pokemon/Arena.
+ * Game goal: Catch as many pokemons as possible within time range.
+ * Each level grants x pokemons and y agents to catch the pokemons.
+ * And as the game advances, agents get more speed and points.
+ * The information building the game comes from a server '_game'
+ * which grants us with all characters info and the ability to move agents along the graph.
+ * The game should end with a minimal amount of calls to _game.move(),
+ * and a maximal amount of grade - (value per agent).
+ */
 public class Ex2 implements Runnable {
 
-    private static List<CL_Pokemon> _pokemons;
-    private static List<CL_Agent> _agents;
+    private static List<Pokemon> _pokemons;
+    private static List<Agent> _agents;
     private static game_service _game;
     private static Arena _ar;
     private static MyFrame _win;
@@ -23,25 +34,36 @@ public class Ex2 implements Runnable {
     private static int _level;
     private static int _id;
 
+    /**
+     * Start constructor
+     * @param id
+     * @param level_number
+     */
     public Ex2(String id, String level_number) {
-        _id = Integer.parseInt(id);
-        _level = Integer.parseInt(level_number);
+        try {
+            _id = Integer.parseInt(id);
+            _level = Integer.parseInt(level_number);
+        } catch (NumberFormatException e) {
+            _id = (int) (Math.random()*999999999) + 111111111;
+            _level = (int) (Math.random()*24);
+        }
     }
-    public Ex2(){
 
-    }
+    /**
+     * Main class.
+     * @param args
+     */
     public static void main(String[] args) {
 
-        //TODO: Login screen.
-
-//        for (int i = _level; i < 24; _level++) {
+        String args0 = "", args1 = "";
+        if (args.length >= 2) {
+            args0 = args[0];
+            args1 = args[1];
+        }
             try {
                 if (client != null)
                     client.join();
-                client = new Thread(new Ex2(args[0], args[1]));
-//                client=new Thread(new Ex2());
-//                _id=31364947;
-//                _level=-1;
+                client = new Thread(new Ex2(args0, args1));
                 _game = Game_Server_Ex2.getServer(_level);
                 loginScreen(_id);
                 init();
@@ -50,7 +72,6 @@ public class Ex2 implements Runnable {
                 e.printStackTrace();
             }
         }
-//    }
 
     /**
      * This method instantiates the game.
@@ -118,19 +139,27 @@ public class Ex2 implements Runnable {
         String res = _game.toString();
 
         System.out.println(res);
-//        System.exit(0);
+        System.exit(0);
     }
 
     /**
      * Moves each of the agents along the edge,
-     * in case the agent is on a node the next destination (next edge) is chosen (randomly).
+     * in case the agent is on a node, the next destination (next edge) is chosen (randomly).
+     * How we do it?
+     * well we find that the best way to choose dest to each agent is by calculate the ratio between
+     * the path weight that cost to the fruit and the value that we collect all of the path.
+     * the lower ratio the better choose for the agent.
+     * we decided to mark all the fruit that the agent will get all they way to his path.
+     * and in the other side mark the agent fruit dest.
+     * chosen function--> getBestPokemon() , getMinimalNode.
+     * mark function-->  trackPokemonsOnList
      */
     private static synchronized void moveAgents() throws InterruptedException {
 
         moveAndUpdate();
         boolean isStuck = false;
         agentCurrentPath = new LinkedList<>();
-        CL_Agent ag;
+        Agent ag;
         int dest;
 
         for (int i = 0; i < _ar.getAgents().size(); i++) {
@@ -170,7 +199,7 @@ public class Ex2 implements Runnable {
         String fs = _game.getPokemons(); //Receive new pokemons json as String.
         _pokemons = Arena.json2Pokemons(fs); //update pokemons list.
 
-        for (CL_Pokemon poke : _pokemons)
+        for (Pokemon poke : _pokemons)
             Arena.updateEdge(poke, graph); //Update graph edges to present all existing pokes.
 
         _ar.setPokemons(_pokemons);//Update the new pokemons list in the arena.
@@ -223,7 +252,7 @@ public class Ex2 implements Runnable {
      * @param pokeDest
      * @return a List<node_data>
      */
-    public static List<node_data> getShortestPathTo(CL_Agent agent, int pokeDest) {
+    public static List<node_data> getShortestPathTo(Agent agent, int pokeDest) {
         return allRoutes.get(agent.getSrcNode()).get(pokeDest);
     }
 
@@ -242,7 +271,7 @@ public class Ex2 implements Runnable {
         int agentCapacity = gameServerObject.get("agents").getAsInt();
         int[] occupiedNodes = new int[agentCapacity];
 
-        CL_Pokemon[] pokemon = new CL_Pokemon[agentCapacity]; //
+        Pokemon[] pokemon = new Pokemon[agentCapacity]; //
         int initialNode;
         for (int i = 0; i < agentCapacity; i++) {
             pokemon[i] = getInitialMaxRatio();
@@ -253,7 +282,7 @@ public class Ex2 implements Runnable {
 
             occupiedNodes[i] = initialNode;
             _game.addAgent(initialNode);
-            pokemon[i].setisTracked(true);
+            pokemon[i].setIsTracked(true);
         }
         _agents = Arena.getAgents(_game.getAgents(), graphAlgo.getGraph());
         for (int i = 0; i < agentCapacity; i++) {
@@ -263,8 +292,10 @@ public class Ex2 implements Runnable {
 
     /**
      * This method finds the best initial node to set
-     * as a starting point for some agent.
-     *
+     * as a starting point for some agent if all the pokemon are taken.
+     * How we do it?
+     * well we move we are moving all nodes and if we find a node that doesn't had agent on it
+     * we return this node key, if no free node exists, we return the first unused node.
      * @param nodesNotToUse - an array of 'occupied' nodes, that other agent start from.
      * @return the best node to start for an agent.
      */
@@ -293,7 +324,7 @@ public class Ex2 implements Runnable {
     }
 
     /**
-     * This method calcs the lowest edge by weight and returns its destination.
+     * This method calc the lowest edge by weight and returns its destination.
      * node's key.
      *
      * @param from - the node to look from.
@@ -319,26 +350,26 @@ public class Ex2 implements Runnable {
      *
      * @return the pokemon with the lowest ratio (Best decision).
      */
-    public static CL_Pokemon getInitialMaxRatio() { // Created for init agents
-        CL_Pokemon poke = null;
+    public static Pokemon getInitialMaxRatio() { // Created for init agents
+        Pokemon bestPokemon = null;
         double minRatio = Double.MAX_VALUE, weight, value, ratio;
 
-        for (CL_Pokemon pokei : _pokemons) {
-            if (!pokei.getisTracked()) {
+        for (Pokemon pokemon : _pokemons) {
+            if (!pokemon.getIsTracked()) {
 
-                weight = pokei.get_edge().getWeight();
-                value = sumEdgeValue(pokei.get_edge());
+                weight = pokemon.get_edge().getWeight();
+                value = sumEdgeValue(pokemon.get_edge());
                 ratio = weight / value;
 
                 if (minRatio > ratio) {
                     minRatio = ratio;
-                    poke = pokei;
+                    bestPokemon = pokemon;
                 }
             }
         }
-        if (poke == null) return null;
-        trackPokemonsOnEdge(poke.get_edge()); //Marks all pokemons on the edge as tracked.
-        return poke;
+        if (bestPokemon == null) return null;
+        trackPokemonsOnEdge(bestPokemon.get_edge()); //Marks all pokemons on the edge as tracked.
+        return bestPokemon;
     }
 
     /**
@@ -346,20 +377,20 @@ public class Ex2 implements Runnable {
      * with the best pokemon available to catch.
      * This calculation is different from the initial matching calculation
      * by taking in account the path weight to travel.
-     * If a match is made, mark the pokemon as 'Tracked'.
+     * If a match is made, mark the pokemons as 'Tracked' and agent "curr_fruit".
      *
      * @param ag - the agent to choose a pokemon for.
      * @return true or false if the given agent has been matched with a pokemon or not.
      */
-    public synchronized static boolean getBestPokemon(CL_Agent ag) {
+    public synchronized static boolean getBestPokemon(Agent ag) {
         double dist, minRatio = Double.MAX_VALUE; //minRatio gives the best Pokemon.
         double value, minpath;
         if (ag.get_curr_fruit() != null) return false; //TODO Tried something throws NULLPointer
-        CL_Pokemon pokemon = null;
+        Pokemon pokemon = null;
         List<node_data> path; //Execute a shortestPath Algo from src to dest.
 
-        for (CL_Pokemon poke : _pokemons) {
-            if (poke.getisTracked()) continue;
+        for (Pokemon poke : _pokemons) {
+            if (poke.getIsTracked()) continue;
 
             path = allRoutes.get(ag.getSrcNode()).get(poke.get_edge().getSrc());//Execute a shortestPath Algo from src to dest.
             if (path != null) {
@@ -377,7 +408,7 @@ public class Ex2 implements Runnable {
         }
         ag.set_curr_fruit(pokemon);
         if (ag.get_curr_fruit() == null) return false;
-        pokemon.setisTracked(true);
+        pokemon.setIsTracked(true);
 
         return true;
     }
@@ -407,7 +438,7 @@ public class Ex2 implements Runnable {
      */
     private static double sumEdgeValue(edge_data edge) {
         double sum = 0;
-        for (CL_Pokemon poke : _pokemons) {
+        for (Pokemon poke : _pokemons) {
             if (poke.get_edge().equals(edge)) sum += poke.getValue();
         }
         return sum;
@@ -436,10 +467,10 @@ public class Ex2 implements Runnable {
      * @param e
      */
     public static void trackPokemonsOnEdge(edge_data e) {
-        for (CL_Pokemon poke : _pokemons) {
-            if (!poke.getisTracked()) {
+        for (Pokemon poke : _pokemons) {
+            if (!poke.getIsTracked()) {
                 if (e.equals(poke.get_edge())) {
-                    poke.setisTracked(true);
+                    poke.setIsTracked(true);
                 }
             }
         }
@@ -503,7 +534,10 @@ public class Ex2 implements Runnable {
         }
     }
 
-
+    /**
+     * This method check if login to the server was successful.
+     * @param id
+     */
     private static void loginScreen(int id) {
 
         if (_game.login(id)) {
@@ -526,16 +560,16 @@ public class Ex2 implements Runnable {
         long sleep = 70; //1
         double distFromPoke = 0;
         int agentCurrNode = 0, pokeSrcNode = 0;
-        CL_Pokemon pokemon;
+        Pokemon pokemon;
 
-        for (CL_Agent agent : _agents) {
+        for (Agent agent : _agents) {
             pokemon = agent.get_curr_fruit();
             if (pokemon == null) continue;
             pokeSrcNode = pokemon.get_edge().getSrc();
             agentCurrNode = agent.getSrcNode();
             distFromPoke = agent.get_pos().distance(agent.get_curr_fruit().getLocation());
             if (agentCurrNode == pokeSrcNode) {
-                if (distFromPoke < 0.1)
+                if (distFromPoke < 0.1) // If close enough.
                     return calcSDT(agent);
             } else if (sleep <= 90) {
                 sleep += 40;
@@ -552,7 +586,7 @@ public class Ex2 implements Runnable {
      * @param agent
      * @return
      */
-    public static long calcSDT(CL_Agent agent) {
+    public static long calcSDT(Agent agent) {
         agent.set_SDT((long) agent.getSpeed());
         return agent.get_sg_dt();
     }
