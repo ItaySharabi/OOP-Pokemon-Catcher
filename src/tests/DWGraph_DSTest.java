@@ -1,20 +1,13 @@
 package tests;
 
 import api.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Node;
-
 import java.util.Iterator;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class DWGraph_DSTest {
 
     static directed_weighted_graph g;
-
-
 
     @Test
     void getEdge() {
