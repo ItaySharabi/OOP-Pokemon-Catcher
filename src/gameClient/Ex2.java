@@ -27,24 +27,29 @@ public class Ex2 implements Runnable {
         _id = Integer.parseInt(id);
         _level = Integer.parseInt(level_number);
     }
+    public Ex2(){
 
+    }
     public static void main(String[] args) {
 
         //TODO: Login screen.
 
 //        for (int i = _level; i < 24; _level++) {
-        try {
-            if (client != null)
-                client.join();
-            client = new Thread(new Ex2(args[0], args[1]));
-            _game = Game_Server_Ex2.getServer(_level);
-            loginScreen(_id);
-            init();
-            client.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                if (client != null)
+                    client.join();
+                client = new Thread(new Ex2(args[0], args[1]));
+//                client=new Thread(new Ex2());
+//                _id=31364947;
+//                _level=-1;
+                _game = Game_Server_Ex2.getServer(_level);
+                loginScreen(_id);
+                init();
+                client.start();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-    }
 //    }
 
     /**
