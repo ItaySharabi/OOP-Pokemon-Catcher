@@ -19,12 +19,12 @@ public class CL_Pokemon {
     private edge_data _edge;
     private double _value;
     private int _type;
-    private Point3D _pos;
+    private geo_location _pos;
     private double min_dist;
     private int min_ro;
     private boolean isTracked; // TODO: should be defined in the constructor
 
-    public CL_Pokemon(Point3D p, int t, double v, double s, edge_data e) {
+    public CL_Pokemon(geo_location p, int t, double v, double s, edge_data e) {
         _type = t;
         //	_speed = s;
         _value = v;
@@ -35,7 +35,7 @@ public class CL_Pokemon {
         isTracked = false;
     }
 
-    public CL_Pokemon(Point3D location1, int type,double value ,edge_data edge) {
+    public CL_Pokemon(geo_location location1, int type,double value ,edge_data edge) {
         _type = type;
         _value = value;
         set_edge(edge);
@@ -61,11 +61,11 @@ public class CL_Pokemon {
             double y = Double.parseDouble(posArr[1]);
             double z = Double.parseDouble(posArr[2]);
             geo_location location = new Point3D(x, y, z);
-            Point3D location1=new Point3D(x,y,z);
+//            Point3D location1=new Point3D(x,y,z);
 
             value = pocemonJson.get("value").getAsDouble();
             type = pocemonJson.get("type").getAsInt();
-            CL_Pokemon pokemon=new CL_Pokemon(location1,type,value,edge);
+            CL_Pokemon pokemon=new CL_Pokemon(location,type,value,edge);
 
             return pokemon;
         } catch (NullPointerException e) {
@@ -82,7 +82,7 @@ public class CL_Pokemon {
         this._edge = _edge;
     }
 
-    public Point3D getLocation() {
+    public geo_location getLocation() {
         return _pos;
     }
     public int getType() {return _type;}

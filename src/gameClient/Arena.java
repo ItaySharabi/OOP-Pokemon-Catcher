@@ -127,7 +127,6 @@ public class Arena {
     }
 
     private static boolean isOnEdge(geo_location p, geo_location src, geo_location dest ) {
-
         boolean ans = false;
         double dist = src.distance(dest);
         double d1 = src.distance(p) + p.distance(dest);
