@@ -102,7 +102,7 @@ public class DWGraph_DS implements directed_weighted_graph {
             outEdges.put(n.getKey(), new HashMap<Integer, edge_data>()); //Init its out-going edge map.
             inEdges.put(n.getKey(), new HashMap<Integer, edge_data>()); //Init its in-coming edge map.
             countMC++; //Count 1 meta-change.
-        } else System.err.println("A node with the same key is already on the graph!");
+        }
     }
 
     /**
@@ -202,10 +202,12 @@ public class DWGraph_DS implements directed_weighted_graph {
      */
     @Override
     public edge_data removeEdge(int src, int dest) {
-        if (getEdge(src, dest) != null && src != dest) {
-            inEdges.get(dest).remove(src);
-            edgeSize--;
-            return outEdges.get(src).remove(dest);
+        if (getNode(src) != null && getNode(dest) != null && src != dest) {
+//            if (getEdge(src, dest) != null) {
+                inEdges.get(dest).remove(src);
+                edgeSize--;
+                return outEdges.get(src).remove(dest);
+//            }
         }
         return null;
     }

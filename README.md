@@ -112,7 +112,7 @@ This is done by Serializing and Deserializing graphs into json formats.
 * Hit RUN (Green 'Play' button), and the game should be running! 
 
 ###Through Terminal (Command Prompt)
-* Navigate throughout your computer to look for the extracted folder, using the 'cd' and 'dir' commands.
+* Navigate throughout your computer to look for the extracted folder, using the `cd` and `dir` commands.
 * Find OOP_Ex2.jar file (`dir` command shows directory content).
 
 ![alt text](data\images\run.png)
