@@ -43,6 +43,7 @@ The class has some valuable methods given to us. All were not changed.
 *******************Main Methodology implementation*******************
 
 *********_DWGraph_DS classes methods:_*********
+
 We Have used three HashMaps that represent the graph.
 nodes: This HashMap represents the nodes on the graph by key and value(node_data).
 outEdges: This HashMap represents the outgoing edges from each node (by key) to all of it's neighbors.
@@ -97,9 +98,32 @@ This method was implemented with inspiration from Dijkstra's algorithm.
 
 </center>
 
->public boolean **save(String file)/load(String file)**
+>`public boolean save(String file)/load(String file)`
 * Save and load the graph into / from a file located in the path that 'file' represents
 This is done by Serializing and Deserializing graphs into json formats.
+
+*********_Agent class methods:_*********
+
+![alt text](data\images\agent.png)
+
+* curr_fruit: the target of the best pokemon of this agent.
+
+*********_Pokemon class methods:_*********
+* isTracked: a boolean parameter that shown if this pokemon are tracked by any agent.
+* we decided to show a multi type of pokemon that are separated by values and 
+not by types.  
+
+![alt text](data\images\lowValue.png)
+* value range: 0-5.
+
+![alt text](data\images\mediumValue.png)
+* value range: 5-10.
+
+![alt text](data\images\picatchu.png)
+* value range: 10-15.
+
+![alt text](data\images\highvalue.png)
+* value range: 15 and above.
 
 #How To Run
 * Download project zip file from **https://github.com/ItaySharabi/OOP_Ex2.git** 
