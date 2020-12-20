@@ -43,7 +43,7 @@ public class MyFrame extends JFrame {
         int x = 800, y = 60;
         Graphics2D g2 = (Graphics2D) g;
         g2.drawRect(x, y,150,90);
-
+        g.setFont(new Font("",Font.BOLD,15));
         g2.drawString("Level:\n" + getLevel(), x+5, y+=20);
         g2.drawString("Time to end:\n"+_game.timeToEnd()/1000,x+5, y+=20);
         g2.drawString("Moves:\n" + getMoves(), x+5, y+=20);
@@ -76,11 +76,8 @@ public class MyFrame extends JFrame {
         int r = 300;
         Graphics2D g2 = (Graphics2D) g;
         Toolkit tk = Toolkit.getDefaultToolkit();
-        Image lowValue = tk.getImage("backgroundsecound.png");
-        Image mediumValue = tk.getImage("picatchu.png");
-        Image highValue = tk.getImage("highvalue.png");
-        Image img = lowValue;
-            g2.drawImage(img, 0,0, 1550, 840, this);
+        Image backGround = tk.getImage("backgroundsecound.png");
+        g2.drawImage(backGround, 0,0, 1550, 840, this);
     }
 
     private void updateFrame() {
@@ -99,11 +96,8 @@ public class MyFrame extends JFrame {
      * @param g
      */
     public void paint(Graphics g) {
-//        Toolkit tk = Toolkit.getDefaultToolkit();
-//        Image backGround = tk.getImage("backgroundsecound.png");
         dbImage = createImage(getWidth(), getHeight());
         dbGraphic = dbImage.getGraphics();
-//        dbGraphic=backGround.getGraphics();
         paintComponent(dbGraphic);
         g.drawImage(dbImage, 0, 0, this);
     }
@@ -112,9 +106,6 @@ public class MyFrame extends JFrame {
         int w = this.getWidth();
         int h = this.getHeight();
         g.clearRect(0, 0, w, h);
-//        Graphics2D g2 = (Graphics2D) g;
-
-        //	updateFrame();
         drawBackGround(g);
         drawPokemons(g);
         drawGraph(g);
@@ -157,7 +148,7 @@ public class MyFrame extends JFrame {
             while (itr.hasNext()) {
 
                 CL_Pokemon f = itr.next();
-                Point3D c = f.getLocation();
+                geo_location c = f.getLocation();
                 int r = 30;
                 Graphics2D g2 = (Graphics2D) g;
                 Toolkit tk = Toolkit.getDefaultToolkit();
@@ -176,7 +167,9 @@ public class MyFrame extends JFrame {
                     img = highValue;
                 if (c != null) {
                     geo_location fp = this._w2f.world2frame(c);
-                    g2.drawString("" + f.getValue(), (int) fp.x(), (int) fp.y() +100);
+                    g.setFont(new Font("",Font.BOLD,15));
+                    g.setColor(Color.BLACK);
+                    g2.drawString("value: " + f.getValue(), (int) fp.x()-40, (int) fp.y() +45);
                     g2.drawImage(img, (int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r, this);
                 }
             }
@@ -199,7 +192,6 @@ public class MyFrame extends JFrame {
 
                 geo_location fp = this._w2f.world2frame(c);
                 g2.drawImage(agent, (int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r, this);
-//                g.fillOval((int) fp.x() - r, (int) fp.y() - r, 2 * r, 2 * r);
             }
         }
     }
@@ -217,10 +209,7 @@ public class MyFrame extends JFrame {
         geo_location d = gg.getNode(e.getDest()).getLocation();
         geo_location s0 = this._w2f.world2frame(s);
         geo_location d0 = this._w2f.world2frame(d);
-//        g.setClip((int) s0.x(),(int) s0.y(),(int) s0.x(),(int) s0.y());
-//        g.drawString();
         g.setColor(Color.BLACK);
         g.drawLine((int) s0.x(), (int) s0.y(), (int) d0.x(), (int) d0.y());
-        //	g.drawString(""+n.getKey(), fp.ix(), fp.iy()-4*r);
     }
 }
