@@ -30,7 +30,7 @@ public class Arena {
     private static Point3D MIN = new Point3D(0, 100,0);
     private static Point3D MAX = new Point3D(0, 100,0);
 
-    public Arena() {;
+    public Arena() {
         _info = new ArrayList<String>();
     }
     private Arena(directed_weighted_graph g, List<Agent> r, List<Pokemon> p) {
