@@ -145,7 +145,7 @@ not by types.
 ![alt text](https://i.ibb.co/KjRkST1/run.png)
 
 * Use the command:
-    >*`java -jar OOP_Ex2.jar id level`*
+    >*`java -jar Ex2.jar id level`*
 
 * The game should be now running with the arguments `id`, `level`!
 * Enjoy! :)
