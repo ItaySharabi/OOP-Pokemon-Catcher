@@ -126,7 +126,7 @@ not by types.
 * value range: 15 and above.
 
 # How To Run
-* Download project zip file from **https://github.com/ItaySharabi/OOP_Ex2.git** or **https://github.com/TalSchreiber95/OOP_Ex2**
+* Download project zip file from **https://github.com/ItaySharabi/OOP_Ex2.git** or **https://github.com/TalSchreiber95/OOP_Ex2.git**
 
 ### Manually:
 
