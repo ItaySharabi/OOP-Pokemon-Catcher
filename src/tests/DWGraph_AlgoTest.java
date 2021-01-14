@@ -24,6 +24,29 @@ class DWGraph_AlgoTest {
         g = new DWGraph_DS();
         ga = new DWGraph_Algo(g);
     }
+    @Test
+    void connectedComtest(){
+        ga.init(makeGraph(10, 0));
+        makeFullGraph(ga.getGraph(), 4);
+
+//        DWGraph_Algo gAlgo =new DWGraph_Algo();//was using DWGraph_Algo due that connected_component isn't on interface
+        int first=0;
+        for (node_data node: ga.getGraph().getV()) {
+            first=node.getKey();
+            break;
+        }
+//        System.out.println(ga.getGraph());
+//        List<node_data> path= (DWGraph_Algo)ga.connected_component(first);
+//        System.out.println(path.toString());
+//        for (node_data node: ga.getGraph().getV()) {
+//                assertFalse(path.contains(node)); //
+//        }
+    }
+    @Test
+    void connectedComstest(){
+        directed_weighted_graph g2 =new DWGraph_DS();
+        makeFullGraph(g2,4);
+    }
 
     @Test
     void getGraph() {

@@ -2,6 +2,8 @@ package api;
 
 import com.google.gson.*;
 import gameClient.util.Point3D;
+import kotlin.jvm.internal.MagicApiIntrinsics;
+
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -412,5 +414,50 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     @Override
     public String toString() {
         return graph.toString();
+    }
+
+
+    public List<node_data> connected_component(int src){
+        List<node_data> connectedComList=new LinkedList<node_data>();
+        if(graph==null || graph.getNode(src)==null){
+            return connectedComList;
+        }
+        resetTags();
+        directed_weighted_graph originalGraph=graph;
+        isConnectedBFS(originalGraph.getNode(src));
+        directed_weighted_graph transposeGraph=transpose(graph);
+        isConnectedBFS(transposeGraph.getNode(src));
+        for (node_data node:transposeGraph.getV()) {
+            if(node.getTag()==2){
+                connectedComList.add(node);
+            }
+        }
+        Collections.reverse(connectedComList);
+        return connectedComList;
+    }
+
+    public List<List<node_data>> connected_components() {
+        List<List<node_data>> connectedComLists = new LinkedList<List<node_data>>();
+        resetTags();
+        List<Integer> visited = new LinkedList<Integer>();
+        List<node_data> path=new LinkedList<node_data>();
+
+        for (node_data node : graph.getV()){
+            if(!visited.contains(node.getKey())){
+                path=connected_component(node.getKey());
+              for (node_data nodeP:path){
+                  visited.add(nodeP.getKey());
+              }
+            }
+            connectedComLists.add(path);
+        }
+
+        Collections.reverse(connectedComLists);
+
+        return connectedComLists;
+    }
+
+    public static void main(String[] args) {
+
     }
 }
