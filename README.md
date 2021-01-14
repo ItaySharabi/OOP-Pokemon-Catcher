@@ -1,16 +1,16 @@
-#I.T Pokemon's Game.
+# I.T Pokemon's Game.
 
 <center>
 
-![alt text](data\images\backgroundsecound.png)
+![alt text](https://i.ibb.co/XyV51Jg/backgroundsecound.jpg)
 
 </center>
 
-##**********************************_Introduction_**********************************
+## **********************************_Introduction_**********************************
 
 **@authers Tal Schreiber & Itay Sharabi**
 
-#####***Package: src/api***
+##### ***Package: src/api***
 * NodeData class:
 This class represents the node and all its characteristics.
 implements node_data
@@ -27,7 +27,7 @@ implements directed_weighted_graph
 This class represents all the algorithms we want to execute in this graph
 implements dw_graph_algorithms
 
-#####***Package: src/gameClient***
+#### ***Package: src/gameClient***
 * Agent class: 
 This class represents an agent. 
 Some information about agents is stored as well as some logic to run throuout the game.
@@ -104,7 +104,7 @@ This is done by Serializing and Deserializing graphs into json formats.
 
 *********_Agent class methods:_*********
 
-![alt text](data\images\agent.png)
+![alt text](https://i.ibb.co/VQWPFBx/agent.jpg)
 
 * curr_fruit: the target of the best pokemon of this agent.
 
@@ -113,39 +113,39 @@ This is done by Serializing and Deserializing graphs into json formats.
 * we decided to show a multi type of pokemon that are separated by values and 
 not by types.  
 
-![alt text](data\images\lowValue.png)
+![alt text](https://i.ibb.co/fxXCcbQ/lowValue.jpg)
 * value range: 0-5.
 
-![alt text](data\images\mediumValue.png)
+![alt text](https://i.ibb.co/McYBzxw/medium-Value.jpg)
 * value range: 5-10.
 
-![alt text](data\images\picatchu.png)
+![alt text](https://i.ibb.co/N292DD6/picatchu.jpg)
 * value range: 10-15.
 
-![alt text](data\images\highvalue.png)
+![alt text](https://i.ibb.co/9c6D7Lb/highvalue.jpg)
 * value range: 15 and above.
 
-#How To Run
-* Download project zip file from **https://github.com/ItaySharabi/OOP_Ex2.git** 
+# How To Run
+* Download project zip file from **https://github.com/ItaySharabi/OOP_Ex2.git** or **https://github.com/TalSchreiber95/OOP_Ex2.git**
 
-###Manually:
+### Manually:
 
 * Start IntelliJ, or any other Java workspace environment, and open Ex2.java class.
 
-![alt text](data\images\ManualRun.png)
+![alt text](https://i.ibb.co/PzVG7S5/Manual-Run.png)
 
 * Simply Change the input of the fields 'id' and 'level' as you wish.
 * Hit RUN (Green 'Play' button), and the game should be running! 
 
-###Through Terminal (Command Prompt)
+### Through Terminal (Command Prompt)
 
 * Navigate throughout your computer to look for the extracted folder, using the `cd` and `dir` commands.
 * Find OOP_Ex2.jar file (`dir` command shows directory content).
 
-![alt text](data\images\run.png)
+![alt text](https://i.ibb.co/KjRkST1/run.png)
 
 * Use the command:
-    >*`java -jar OOP_Ex2.jar id level`*
+    >*`java -jar Ex2.jar id level`*
 
 * The game should be now running with the arguments `id`, `level`!
 * Enjoy! :)

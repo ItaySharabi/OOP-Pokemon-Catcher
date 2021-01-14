@@ -36,6 +36,7 @@ public class Ex2 implements Runnable {
 
     /**
      * Start constructor
+     *
      * @param id
      * @param level_number
      */
@@ -44,13 +45,15 @@ public class Ex2 implements Runnable {
             _id = Integer.parseInt(id);
             _level = Integer.parseInt(level_number);
         } catch (NumberFormatException e) {
-            _id = (int) (Math.random()*999999999) + 111111111;
-            _level = (int) (Math.random()*24);
+            System.err.println("Wrong input: \nRequired arguments: id level");
+            _id = 0;
+            _level = 0;
         }
     }
 
     /**
      * Main class.
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -63,18 +66,18 @@ public class Ex2 implements Runnable {
         /*Manual Run:
           args0 = (your id)
           args1 = (choose level) */
-            try {
-                if (client != null)
-                    client.join();
-                client = new Thread(new Ex2(args0, args1));
-                _game = Game_Server_Ex2.getServer(_level);
-                loginScreen(_id);
-                init();
-                client.start();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            if (client != null)
+                client.join();
+            client = new Thread(new Ex2(args0, args1));
+            _game = Game_Server_Ex2.getServer(_level);
+            loginScreen(_id);
+            init();
+            client.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
 
     /**
      * This method instantiates the game.
@@ -299,6 +302,7 @@ public class Ex2 implements Runnable {
      * How we do it?
      * well we move we are moving all nodes and if we find a node that doesn't had agent on it
      * we return this node key, if no free node exists, we return the first unused node.
+     *
      * @param nodesNotToUse - an array of 'occupied' nodes, that other agent start from.
      * @return the best node to start for an agent.
      */
@@ -539,15 +543,13 @@ public class Ex2 implements Runnable {
 
     /**
      * This method check if login to the server was successful.
+     *
      * @param id
      */
     private static void loginScreen(long id) {
-
-        if (_game.login(id)) {
-            System.out.println("Logged in with: " + id);
-        } else {
-            System.out.println("Failed to log in");
-        }
+        if (id < 111111111) return;
+        if (_game.login(id))
+            System.out.println("Logged in with id: " + id);
     }
 
     /**
