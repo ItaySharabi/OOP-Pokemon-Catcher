@@ -456,8 +456,4 @@ public class DWGraph_Algo implements dw_graph_algorithms {
 
         return connectedComLists;
     }
-
-    public static void main(String[] args) {
-
-    }
 }
